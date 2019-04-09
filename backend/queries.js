@@ -35,7 +35,7 @@ const loginUser = (request, response) => {
 		if (error) {
 			throw error;
 		}
-		console.log(results.rowCount);
+		console.log("Query successful.  Rows affected: " + results.rowCount);
 		return response.status(200).json(results.rows);
 	})
 }
