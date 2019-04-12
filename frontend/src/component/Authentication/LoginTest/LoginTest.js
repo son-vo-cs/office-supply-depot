@@ -36,18 +36,25 @@ class LoginTest extends React.Component {
 		console.log(data);
 		console.log(JSON.stringify(data));*/
 
+		/*const data = {
+			'email': 'bz@cs.com',
+			'password': '123'
+		};*/
+
 		const data = {
-			email: 'test',
-			password: 'test2'
+			'email': form.email.value,
+			'password': form.password.value
 		};
 
-		fetch('http://localhost:3006', {
+		fetch('http://localhost:3006/login', {
 			method: 'POST',
-			body: data,
-			headers: new Headers({'content-type': 'application/json'})
+			body: JSON.stringify(data),
+			headers: new Headers({'Content-Type': 'application/json'})
+		}).then(response => {
+		 	return response.json();
 		}).then(response => {
 		 	console.log(JSON.stringify(response));
-		 });
+		});
 	}
 
 	render() {
@@ -58,11 +65,11 @@ class LoginTest extends React.Component {
                 	<form onSubmit={this.loginSubmit}>
                     	<div className="inner-icon left-addon">
                         	<span className="glyphicon glyphicon-user" />
-                        	<input type="text" placeholder="Enter Username" value={this.state.email} onChange={this.emailChange} required />
+                        	<input type="text" placeholder="Enter Username" name="email" /*value={this.state.email} onChange={this.emailChange}*/ required />
                     	</div>
                     	<div className="inner-icon left-addon">
                         	<span className="glyphicon glyphicon-lock" />
-                    		<input type="password" ref="password" placeholder="Enter Password" value={this.state.password} onChange={this.passwordChange} required />
+                    		<input type="password" /*ref="password"*/ placeholder="Enter Password" name="password" /*value={this.state.password} onChange={this.passwordChange}*/ required />
             			</div>
             			<input type="submit" name="" value="Login" />
                     	<a href="#">Don't have an account? </a>
