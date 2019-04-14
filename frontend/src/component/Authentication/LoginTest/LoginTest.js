@@ -1,61 +1,34 @@
 import React from 'react';
 import "./LoginTest.scss";
+import ApiService from "./../../../common/services/ApiService";
 
 class LoginTest extends React.Component {
 	constructor() {
 		super();
-		this.state = {
-			email: '',
-			password: ''
-		};
-		this.loginSubmit = this.loginSubmit.bind(this);
-		this.emailChange = this.emailChange.bind(this);
-		this.passwordChange = this.passwordChange.bind(this);
-	}
 
-	emailChange(event) {
-		this.setState({
-			email: event.target.email
-		})
-	}
-
-	passwordChange(event) {
-		this.setState({
-			password: event.target.password
-		})
 	}
 
 	loginSubmit(event) {
 		event.preventDefault();
 		const form = event.target;
-		/*const data = new FormData();
-		data.append('email', form.email);
-		data.append('password', form.password);
-		console.log(data.email);
-		console.log(data.password);
-		console.log(data);
-		console.log(JSON.stringify(data));*/
-
-		/*const data = {
-			'email': 'bz@cs.com',
-			'password': '123'
-		};*/
 
 		const data = {
 			'email': form.email.value,
 			'password': form.password.value
 		};
 
-		fetch('http://localhost:3006/login', {
-			method: 'POST',
-			body: JSON.stringify(data),
-			headers: new Headers({'Content-Type': 'application/json'})
-		}).then(response => {
-		 	return response.json();
-		}).then(response => {
-		 	console.log(JSON.stringify(response));
+
+		var response = ApiService.login(data);
+
+		response.then(result=>{
+			// Your codes start here
+			// Do whatever you want with the result JSON type. For example: print out the result:
+			console.log(result);
+			console.log(result.firstname);
+			console.log(result.userid);
 		});
 	}
+
 
 	render() {
 		return (
