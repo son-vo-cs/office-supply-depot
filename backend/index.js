@@ -21,6 +21,9 @@ app.get('/', (request, response) => {
 
 app.post('/login', db.loginUser);
 app.post('/register', db.registerUser);
+app.post('/getItem', db.getItem);
+app.post('/getAll', db.getAll);
+
 
 app.listen(port, () => {
 	console.log(`App running on port ${port}.`);
