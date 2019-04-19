@@ -20,6 +20,11 @@ class ApiService {
     register(data){return this.apiOSD('register',data)};
     getAll(){return this.apiOSD('getAll',{"a":2})};
     getItem(data) {return this.apiOSD('getItem',data)};
+    addItem(data){return this.apiOSD('addItem',data)};
+    checkAvailable(data) {return this.apiOSD('checkAvailable',data)};
+    submitOrder(data){return this.apiOSD('submitOrder',data)};
+    getOrderHistory(data){return this.apiOSD('getOrderHistory',data)};
+
 }
 
 export default new ApiService();
