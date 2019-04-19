@@ -48,6 +48,18 @@ function setDatabase(command, vars, cb)
 	});
 }
 
+function getpair(id,quantity)
+{
+	var str = "";
+	for (var i = 0; i < id.length; i++)
+	{
+		str = str + "(" + id[i] + "," + quantity[i] + ")" + ",";
+	}
+	str = str.slice(0,-1);
+	return str;
+}
+
+
 const registerUser = (request, response) => {
 	const {firstname, lastname, email, password} = request.body;
 	getDatabase('SELECT email FROM users WHERE email = $1', [email],
@@ -131,32 +143,101 @@ const getItem = (request, response) =>{
 			else
 			{
 				response.status(200).json(result);
-				console.log(result);
 
 			}
 		});
 }
 
 
-// const addItem = (request, response) =>{
-// 	// const {warehouseid, quantity, price, name, weight, description, category, imagename} = request.body;
-// 	var warehouseid = 1;
-// 	var quantity = 6;
-// 	var price = 15;
-// 	var name = "chair";
-// 	var weight = 10;
-// 	var description = "a chair";
-// 	var category = "home";
-// 	var imagename = "2.jpg";
-//
-//
-// 	setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category,imagename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-// 		[warehouseid, quantity, price, name, weight, description, category, imagename],(result)=>
-// 		{
-// 			response.status(200).json("Item added successfully");
-// 		});
-//
-// }
+const addItem = (request, response) =>{
+	const {warehouseid, quantity, price, name, weight, description, category, url} = request.body;
+
+	setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category,imagename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+		[warehouseid, quantity, price, name, weight, description, category, url],(result)=>
+		{
+			response.status(200).json("Item added successfully");
+		});
+
+}
+
+const checkAvailable = (request, response) =>{
+	const {itemId, quantity} = request.body;
+
+	getDatabase('SELECT rowid,* FROM items WHERE rowid = $1', [itemId],
+		(result)=>{
+			if (result === undefined)
+			{
+				response.status(404).json(`The item id is incorrect`);
+			}
+			else
+			{
+				if (result.quantity >= quantity)
+				{
+					response.status(200).json(`Available`);
+				}
+				else
+				{
+					response.status(200).json(`Out of stock`);
+				}
+
+			}
+	});
+}
+
+
+
+const submitOrder = (request, response) => {
+	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priorities, timestamp} = request.body;
+	var shipaddress = firstname + " " + lastname + " \n" + address + ", " + city + ", " + state + " " + zip;
+	var pair = getpair(itemids, quantities);
+	var qr = "WITH Tmp(id,quantity) AS (VALUES" + pair + ") UPDATE items SET quantity = quantity - ";
+	qr = qr + "(SELECT quantity FROM Tmp WHERE items.rowid = Tmp.id) WHERE rowid IN (SELECT id FROM Tmp)";
+	setDatabase(qr, [],
+		(result) => {
+
+
+			setDatabase("INSERT INTO orders (userid, status,orderdate) VALUES (?,?,?)",
+				[userid,"processing","2019-05-09"], (t)=>{
+					getDatabase("SELECT rowid FROM orders WHERE userid = $1", [userid],(t1)=>{
+						if (t1 === undefined)
+						{
+							response.status(404).json("Cannot get orders");
+						}
+						else {
+							var orderid = t1.rowid;
+							setDatabase("INSERT INTO ordersplaced (userid, orderid, shipadd, phone, totalprice, itemids, quantities, priorities, orderdate) VALUES (?,?,?,?,?,?,?,?,?)",
+								[userid,orderid,shipaddress,phone,totalprice,itemids.toString(),quantities.toString(),priorities.toString(),timestamp],(t)=>{
+
+									setDatabase("INSERT INTO useraddress (userid, address, city, state,zip) VALUES (?,?,?,?,?)",
+													[userid,address,city,state,zip],(t3)=> {
+											response.status(200).json("Successfully submitted");
+										});
+							});
+
+
+						}
+					});
+				});
+		});
+}
+
+
+const getOrderHistory = (request, response) =>{
+	const userid = request.body.userid;
+	getDatabase('SELECT * FROM ordersplaced WHERE userid = $1', [userid],
+		(result)=>{
+			if (result === undefined)
+			{
+				response.status(404).json(`Cannot get order history`);
+			}
+			else
+			{
+				response.status(200).json(result);
+				// console.log(result);
+
+			}
+		});
+}
 
 
 
@@ -164,5 +245,9 @@ module.exports = {
 	registerUser,
 	loginUser,
 	getAll,
-	getItem
+	getItem,
+	addItem,
+	checkAvailable,
+	submitOrder,
+	getOrderHistory,
 }
