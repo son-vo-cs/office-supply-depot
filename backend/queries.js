@@ -225,7 +225,7 @@ const submitOrder = (request, response) => {
 							var values = getpair2(orderid,itemids,warehousenums,quantities,priorities);
 							setDatabase("INSERT INTO itemsinorder (orderid, itemid, warehousenum, quantity, priority,status) VALUES " + values,
 								[],(t)=>{
-								getDatabase("SELECT orderid FROM itemsinorder WHERE status = 'processing'",[],(t5)=>{
+								getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
 									if (t5 === undefined)
 									{
 										setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
@@ -285,11 +285,19 @@ const getOrderHistoryDetail = (request, response) =>
 			else
 			{
 				response.status(200).json(result);
-				console.log(result);
+
 			}
 		});
 }
 
+function helperShipAddress(arr, orderid)
+{
+	for (var i = 0; i < arr.length; i++)
+	{
+		if (arr[i].orderid === orderid)
+			return arr[i].shipadd;
+	}
+}
 const getShipAddress = (request, response) =>
 {
 	getDatabase("SELECT orderid, shipadd FROM orders WHERE status= " + "'processing'", "",
@@ -300,16 +308,34 @@ const getShipAddress = (request, response) =>
 			}
 			else
 			{
-				for (var i = 0; i < result.length; i++)
-				{
-					getDatabase("SELECT itemid FROM itemsinorder WHERE status=" + "'processing'" + " AND orderid=" + result[i].orderid , "",(t)=>{
-						result["itemids"] = t;
+				getDatabase("SELECT itemid, orderid FROM itemsinorder WHERE status=" + "'processing'" , "",(t)=>{
+						for (var i = 0; i < t.length; i++)
+						{
+							t[i]["shipaddress"] = helperShipAddress(result, t[i].orderid);
+						}
+						response.status(200).json(t);
 				});
-				}
-				console.log(result);
 			}
 		});
 }
+
+const markDelivered = (request, response) =>
+{
+	const {orderid, itemid} = request.body;
+	// console.log(orderid);
+	setDatabase("UPDATE itemsinorder SET status = 'delivered' WHERE orderid = " + orderid + " AND itemid = " + itemid,[],(t)=>{
+		getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
+			if (t5 === undefined)
+			{
+				setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
+						response.status(200).json("Update status sucessfully for item " + itemid + " in  order " + orderid);
+				});
+			}
+		});
+	});
+
+}
+
 
 
 
@@ -323,5 +349,6 @@ module.exports = {
 	submitOrder,
 	getOrderHistory,
 	getOrderHistoryDetail,
-	getShipAddress
+	getShipAddress,
+	markDelivered
 }
