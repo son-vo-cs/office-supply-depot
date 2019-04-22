@@ -59,22 +59,39 @@ function getpair(id,quantity)
 	return str;
 }
 
+function getpair2(orderid, itemids, warehousenums, quantities, priorities)
+{
+	var str = "";
+	for (var i = 0; i < itemids.length; i++)
+	{
+		var status = "'processing'";
+		if (priorities[i] < 2)
+		{
+			status = "'delivered'";
+		}
+		str = str + "(" + orderid + "," + itemids[i] + "," + warehousenums[i] + "," + quantities[i] + "," + priorities[i] + "," + status + "),";
+	}
+	return str.slice(0,-1);
+}
 
 const registerUser = (request, response) => {
 	const {firstname, lastname, email, password} = request.body;
+	var userId = 1;
+
+
 	getDatabase('SELECT email FROM users WHERE email = $1', [email],
 		(result)=>{
 			if (result === undefined)
 			{
 				setDatabase('INSERT INTO users (email, password) VALUES (?, ?)', [email, password],(t)=>{
-					getDatabase('SELECT rowid FROM users WHERE email = $1', [email],
+					getDatabase('SELECT userid FROM users WHERE email = $1', [email],
 						(result1)=> {
 							if (result1 === undefined)
 							{
 								response.status(404).json("Cannot get value");
 							}
 							else{
-								var userId = result1.rowid;
+								var userId = result1.userid;
 								setDatabase('INSERT INTO customers (userid, firstname, lastname) VALUES (?, ?, ?)', [userId,firstname,lastname],(tt)=>{
 									response.status(200).json("User added successfully");
 								});
@@ -105,8 +122,8 @@ const loginUser = (request, response) => {
 		}
 		else
 		{
-			getDatabase('SELECT rowid FROM users WHERE email = $1', [email], (t)=>{
-				var userId = t.rowid;
+			getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
+				var userId = t.userid;
 				getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
 				{
 					response.status(200).json({"userid": userId, "firstname" : result1.firstname});
@@ -133,8 +150,8 @@ const getAll = (request, response) => {
 }
 
 const getItem = (request, response) =>{
-	const itemId = request.body.itemId;
-	getDatabase('SELECT rowid,* FROM items WHERE rowid = $1', [itemId],
+	const itemId = request.body.itemid;
+	getDatabase('SELECT * FROM items WHERE itemid = $1', [itemId],
 		(result)=>{
 			if (result === undefined)
 			{
@@ -161,9 +178,9 @@ const addItem = (request, response) =>{
 }
 
 const checkAvailable = (request, response) =>{
-	const {itemId, quantity} = request.body;
+	const {itemid, quantity} = request.body;
 
-	getDatabase('SELECT rowid,* FROM items WHERE rowid = $1', [itemId],
+	getDatabase('SELECT * FROM items WHERE itemid = $1', [itemid],
 		(result)=>{
 			if (result === undefined)
 			{
@@ -187,34 +204,53 @@ const checkAvailable = (request, response) =>{
 
 
 const submitOrder = (request, response) => {
-	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priorities, timestamp} = request.body;
-	var shipaddress = firstname + " " + lastname + " \n" + address + ", " + city + ", " + state + " " + zip;
+	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priorities, warehousenums, timestamp} = request.body;
+	var shipaddress = address + ", " + city + ", " + state + " " + zip;
 	var pair = getpair(itemids, quantities);
 	var qr = "WITH Tmp(id,quantity) AS (VALUES" + pair + ") UPDATE items SET quantity = quantity - ";
 	qr = qr + "(SELECT quantity FROM Tmp WHERE items.rowid = Tmp.id) WHERE rowid IN (SELECT id FROM Tmp)";
+
+
 	setDatabase(qr, [],
 		(result) => {
-
-
-			setDatabase("INSERT INTO orders (userid, status,orderdate) VALUES (?,?,?)",
-				[userid,"processing","2019-05-09"], (t)=>{
-					getDatabase("SELECT rowid FROM orders WHERE userid = $1", [userid],(t1)=>{
+			setDatabase("INSERT INTO orders (userid, shipadd, phone, totalprice, orderdate, status) VALUES (?,?,?,?,?,?)",
+				[userid,shipaddress, phone, totalprice, timestamp, "processing"], (t)=>{
+					getDatabase("SELECT orderid FROM orders WHERE userid = " + userid, "",(t1)=>{
 						if (t1 === undefined)
 						{
-							response.status(404).json("Cannot get orders");
+							response.status(200).json("Cannot get orders");
 						}
 						else {
-							var orderid = t1.rowid;
-							setDatabase("INSERT INTO ordersplaced (userid, orderid, shipadd, phone, totalprice, itemids, quantities, priorities, orderdate) VALUES (?,?,?,?,?,?,?,?,?)",
-								[userid,orderid,shipaddress,phone,totalprice,itemids.toString(),quantities.toString(),priorities.toString(),timestamp],(t)=>{
+							var orderid = t1[t1.length-1].orderid;
+							var values = getpair2(orderid,itemids,warehousenums,quantities,priorities);
+							setDatabase("INSERT INTO itemsinorder (orderid, itemid, warehousenum, quantity, priority,status) VALUES " + values,
+								[],(t)=>{
+								getDatabase("SELECT orderid FROM itemsinorder WHERE status = 'processing'",[],(t5)=>{
+									if (t5 === undefined)
+									{
+										setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
 
-									setDatabase("INSERT INTO useraddress (userid, address, city, state,zip) VALUES (?,?,?,?,?)",
-													[userid,address,city,state,zip],(t3)=> {
-											response.status(200).json("Successfully submitted");
 										});
+									}
+								});
+									getDatabase("SELECT userid FROM useraddress WHERE userid = $1", [userid], (t3)=>{
+										if (t3 === undefined)
+										{
+											setDatabase("INSERT INTO useraddress (userid, address, city, state,zip) VALUES (?,?,?,?,?)",
+												[userid,address,city,state,zip],(t4)=> {
+													var result = {"orderid": orderid}
+													response.status(200).json(result);
+												});
+										}
+										else
+										{
+											setDatabase("UPDATE useraddress SET address = ?, city = ?, state = ?, zip = ? WHERE userid = ?",
+												[address,city,state,zip,userid],(t4)=> {
+													response.status(200).json({"orderid": orderid});
+												});
+										}
+									});
 							});
-
-
 						}
 					});
 				});
@@ -224,7 +260,7 @@ const submitOrder = (request, response) => {
 
 const getOrderHistory = (request, response) =>{
 	const userid = request.body.userid;
-	getDatabase('SELECT * FROM ordersplaced WHERE userid = $1', [userid],
+	getDatabase('SELECT * FROM orders WHERE userid = ' + userid, "",
 		(result)=>{
 			if (result === undefined)
 			{
@@ -233,8 +269,44 @@ const getOrderHistory = (request, response) =>{
 			else
 			{
 				response.status(200).json(result);
-				// console.log(result);
+			}
+		});
+}
 
+const getOrderHistoryDetail = (request, response) =>
+{
+	const {orderid} = request.body;
+	getDatabase('SELECT * FROM itemsinorder WHERE orderid = ' + orderid, "",
+		(result)=>{
+			if (result === undefined)
+			{
+				response.status(404).json(`Cannot get order history`);
+			}
+			else
+			{
+				response.status(200).json(result);
+				console.log(result);
+			}
+		});
+}
+
+const getShipAddress = (request, response) =>
+{
+	getDatabase("SELECT orderid, shipadd FROM orders WHERE status= " + "'processing'", "",
+		(result)=>{
+			if (result === undefined)
+			{
+				response.status(404).json(`Cannot get order history`);
+			}
+			else
+			{
+				for (var i = 0; i < result.length; i++)
+				{
+					getDatabase("SELECT itemid FROM itemsinorder WHERE status=" + "'processing'" + " AND orderid=" + result[i].orderid , "",(t)=>{
+						result["itemids"] = t;
+				});
+				}
+				console.log(result);
 			}
 		});
 }
@@ -250,4 +322,6 @@ module.exports = {
 	checkAvailable,
 	submitOrder,
 	getOrderHistory,
+	getOrderHistoryDetail,
+	getShipAddress
 }
