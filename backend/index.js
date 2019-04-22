@@ -4,6 +4,7 @@ const cors = require('cors');
 const app = express();
 const port = 3006;
 const db = require('./queries');
+const jwtauth = require('./auth/jwtauth');
 
 app.use(bodyParser.json());
 app.use(
@@ -23,13 +24,13 @@ app.post('/login', db.loginUser);
 app.post('/register', db.registerUser);
 app.post('/getItem', db.getItem);
 app.post('/getAll', db.getAll);
-app.post('/addItem', db.addItem);
-app.post('/checkAvailable', db.checkAvailable);
-app.post('/submitOrder',db.submitOrder);
-app.post('/getOrderHistory', db.getOrderHistory);
-app.post('/getOrderHistoryDetail', db.getOrderHistoryDetail);
-app.post('/getShipAddress', db.getShipAddress);
-app.post('/markDelivered', db.markDelivered);
+app.post('/checkAvailable', jwtauth.validate,db.checkAvailable);
+app.post('/addItem', jwtauth.validate,db.addItem);
+app.post('/submitOrder',jwtauth.validate,db.submitOrder);
+app.post('/getOrderHistory', jwtauth.validate,db.getOrderHistory);
+app.post('/getOrderHistoryDetail', jwtauth.validate,db.getOrderHistoryDetail);
+app.post('/getShipAddress', jwtauth.validate,db.getShipAddress);
+app.post('/markDelivered', jwtauth.validate,db.markDelivered);
 
 app.listen(port, () => {
 	console.log(`App running on port ${port}.`);
