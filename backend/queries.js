@@ -1,4 +1,6 @@
 const sqlite = require('sqlite3').verbose();
+const jwtauth = require('./auth/jwtauth');
+
 
 
 
@@ -122,11 +124,12 @@ const loginUser = (request, response) => {
 		}
 		else
 		{
+			let token = jwtauth.generate({email: email});
 			getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
 				var userId = t.userid;
 				getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
 				{
-					response.status(200).json({"userid": userId, "firstname" : result1.firstname});
+					response.status(200).json({"userid": userId, "firstname" : result1.firstname, "token": token});
 				})
 
 			});
@@ -179,7 +182,7 @@ const addItem = (request, response) =>{
 
 const checkAvailable = (request, response) =>{
 	const {itemid, quantity} = request.body;
-
+	console.log(request.body);
 	getDatabase('SELECT * FROM items WHERE itemid = $1', [itemid],
 		(result)=>{
 			if (result === undefined)
