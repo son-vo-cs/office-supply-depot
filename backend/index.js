@@ -27,6 +27,8 @@ app.post('/addItem', db.addItem);
 app.post('/checkAvailable', db.checkAvailable);
 app.post('/submitOrder',db.submitOrder);
 app.post('/getOrderHistory', db.getOrderHistory);
+app.post('/getOrderHistoryDetail', db.getOrderHistoryDetail);
+app.post('/getShipAddress', db.getShipAddress);
 
 app.listen(port, () => {
 	console.log(`App running on port ${port}.`);
