@@ -194,15 +194,13 @@ function helperAvailable(itemids)
 function sortTwoList(itemids, quantities)
 {
 
-//1) combine the arrays:
 	var list = [];
 	for (var j = 0; j < itemids.length; j++)
 		list.push({'itemid': itemids[j], 'quantity': quantities[j]});
 
 	list.sort(function(a, b) {
 		return ((a.itemid < b.itemid) ? -1 : ((a.itemid == b.itemid) ? 0 : 1));
-		//Sort could be modified to, for example, sort on the age
-		// if the name is the same.
+
 	});
 
 	return list;
