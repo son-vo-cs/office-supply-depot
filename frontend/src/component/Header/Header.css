@@ -37,8 +37,10 @@
     background-color: #c62828; /* Add a green color to the "active/current" link */
     color: white;
 }
-.card{
-    position: absolute;
-    right: 0;
-    top: 150px;
+
+
+.cardBox {
+    width: 100%;
+    padding-left: 200px;
+    padding-right: 50px;
 }

@@ -1,3 +1,5 @@
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
+
 body{
   margin: 0;
   padding: 0;
@@ -7,11 +9,11 @@ body{
   font-family: sans-serif;
 }
 
+
 .loginbox{
   width: 300px;
   height: 300px;
-  background: #000;
-  color: #fff;
+  background: #e9ecef;
   top: 50%;
   left: 50%;
   position: absolute;
@@ -55,14 +57,14 @@ h1{
   margin-bottom: 15px;
 }
 
-.loginbox input[type="text"], input[type="password"]
+.loginbox input
 {
   border: none;
   border-bottom: 1px solid #fff;
   background: transparent;
   outline: none;
   height: 35px;
-  color: #fff;
+  color: #000000;
   font-size: 14px;
 
 }
@@ -72,7 +74,7 @@ h1{
   border: none;
   outline: none;
   height: 40px;
-  background: #E0115F;
+  background: #c62828;
   color: #fff;
   font-size: 16px;
 }
@@ -138,7 +140,7 @@ hr{
   cursor: pointer;
 }
 
-input.signupbox[type="text"], input.signupbox[type="password"]
+input.signupbox, input.signupbox
 {
   width: 100%;
   padding: 15px;
