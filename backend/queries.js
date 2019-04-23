@@ -129,7 +129,7 @@ const loginUser = (request, response) => {
 				var userId = t.userid;
 				getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
 				{
-					response.status(200).json({"userid": userId, "firstname" : result1.firstname,"level": result.level, "token": token});
+					response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "token": token});
 				})
 
 			});
@@ -180,26 +180,65 @@ const addItem = (request, response) =>{
 
 }
 
+
+function helperAvailable(itemids)
+{
+	var str = "";
+	for (var i = 0; i < itemids.length; i++)
+	{
+		str = str + "(" + itemids[i]  + ")" + ",";
+	}
+	return str.slice(0,-1);
+}
+
+function sortTwoList(itemids, quantities)
+{
+
+//1) combine the arrays:
+	var list = [];
+	for (var j = 0; j < itemids.length; j++)
+		list.push({'itemid': itemids[j], 'quantity': quantities[j]});
+
+	list.sort(function(a, b) {
+		return ((a.itemid < b.itemid) ? -1 : ((a.itemid == b.itemid) ? 0 : 1));
+		//Sort could be modified to, for example, sort on the age
+		// if the name is the same.
+	});
+
+	return list;
+
+}
+
+
 const checkAvailable = (request, response) =>{
-	const {itemid, quantity} = request.body;
-	console.log(request.body);
-	getDatabase('SELECT * FROM items WHERE itemid = $1', [itemid],
+	const {itemids, quantities} = request.body;
+	var listsorted = sortTwoList(itemids, quantities);
+	for (var k = 0; k < listsorted.length; k++) {
+		itemids[k] = listsorted[k].itemid;
+		quantities[k] = listsorted[k].quantity;
+	}
+	var qr = "WITH Tmp(id) AS (VALUES" + helperAvailable(itemids) + ")";
+	qr = qr + "SELECT itemid, quantity FROM items WHERE itemid IN (SELECT id FROM Tmp)";
+	getDatabase(qr, "",
 		(result)=>{
 			if (result === undefined)
 			{
-				response.status(404).json(`The item id is incorrect`);
+				response.status(404).json(`The item ids is incorrect`);
 			}
 			else
 			{
-				if (result.quantity >= quantity)
+				var ids = [];
+				for (var i = 0; i < result.length; i++)
 				{
-					response.status(200).json(`Available`);
+					if (result[i].quantity < quantities[i])
+					{
+						ids.push(result[i].itemid);
+					}
 				}
+				if (ids.length > 0)
+					response.status(200).json(ids);
 				else
-				{
-					response.status(200).json(`Out of stock`);
-				}
-
+					response.status(200).json("All Available");
 			}
 	});
 }
