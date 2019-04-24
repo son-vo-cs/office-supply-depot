@@ -129,7 +129,7 @@ const loginUser = (request, response) => {
 					var userId = t.userid;
 					getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
 					{
-						response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "token": token});
+						response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "email": result.email, "token": token});
 					})
 
 				});
