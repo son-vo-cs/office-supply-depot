@@ -33,7 +33,7 @@ class UserStoreService {
         return this.shoppingCart;
     }
     setShoppingCart(itemList) {
-        return itemList;
+        this.shoppingCart = itemList;
     }
 }
 

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import "./ProductDetail.css";
+import ink1 from "../images/ink1.jpg";
 import StarRatings from 'react-star-ratings';
 import userService from "../../common/services/User/UserService";
 import userStoreService from "../../common/services/User/UserStoreService";
@@ -37,7 +38,7 @@ class ProductDetail extends Component {
 
         userStoreService.addShoppingCartInfo(itemid);
         console.log(userStoreService.getShoppingCart())
-        alert("Thanks for adding this item to your Shopping Cart!")
+        alert("Thanks to add this Item to the Shopping Cart")
 
     };
 
@@ -53,7 +54,7 @@ class ProductDetail extends Component {
                                 <div className="product col-md-3 service-image-left margindefine">
 
 
-                                        <img className="item-display"
+                                        <img id="item-display"
                                              src={this.state.itemData.url}
                                              alt=""/>
 

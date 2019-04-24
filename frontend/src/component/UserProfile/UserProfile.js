@@ -27,7 +27,7 @@ class UserProfile extends Component {
 
 
             <div className="container">
-                <img className="rounded mx-auto d-block Mlogo" src={logo} alt=""/>
+                <img className="rounded mx-auto d-block Mlogo" src={logo}/>
                 <Navbar variant="light">
                     <Nav className="float-right">
                         <Nav.Link >Hi, Customer</Nav.Link>

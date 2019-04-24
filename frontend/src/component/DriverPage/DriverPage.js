@@ -4,6 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import './DriverPage.css'
 import GoogleMap from "./GoogleMap/GoogleMap";
+import userService from "../../common/services/User/UserService";
 
 class DriverPage extends Component {
 
@@ -32,7 +33,7 @@ class DriverPage extends Component {
 
 
 
-    clickHandler = () =>{
+clickHandler = () =>{
         this.setState({start: false, clicked: true})
     };
 
@@ -40,7 +41,7 @@ class DriverPage extends Component {
     render() {
         return (
             <div>
-                <img className="rounded mx-auto d-block logo" src={logo} alt=""/>
+                <img className="rounded mx-auto d-block logo" src={logo}/>
                 <Navbar bg="white" variant="light">
                     <Nav className="float-right">
                         <Nav.Link>Hi, Driver</Nav.Link>

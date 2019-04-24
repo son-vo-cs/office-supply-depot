@@ -12,7 +12,7 @@ const handleSubmit = (event, closeModal) => {
 
     userService.userLogin(JSON.stringify(body)).then((data) => {
         userStoreService.setUser(data);
-        console.log(data);
+      //  console.log(data);
         closeModal(true);
     }).catch((error) => {
         alert(error.message);

@@ -1,7 +1,7 @@
 .pad{
     padding-left: 350px;
 }
-.padButtom{
+.padButton{
     padding-bottom: 40px;
 }
 .pad1{
@@ -20,4 +20,8 @@
 .CartImgSize{
     width: 140px;
     height:90px
+}
+
+.total{
+	padding-bottom: 50px;
 }

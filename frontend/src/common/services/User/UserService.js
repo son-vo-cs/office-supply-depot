@@ -27,7 +27,9 @@ class UserService {
                 'Content-Type': 'application/json'
             }
         }).then((resp) => {
-           console.log(resp)
+            if (!resp.ok) {
+                throw Error('User already exists');
+            }
             return resp.json();
         });
     }
@@ -44,6 +46,19 @@ class UserService {
         });
     }
     getItem(postBody) {
+        let url = this.endpoint + '/getItem';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            console.log(resp)
+            return resp.json();
+        });
+    }
+    getShipAddress(postBody) {
         let url = this.endpoint + '/getItem';
         return fetch(url, {
             method: 'POST',

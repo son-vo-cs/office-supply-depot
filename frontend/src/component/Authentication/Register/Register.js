@@ -16,14 +16,17 @@ class Register extends React.Component {
         password: event.target.password.value,
     };
 
+
     if (body.password === event.target.cPassword.value) {
         userService.userRegister(JSON.stringify(body)).then((data) => {
-            userStoreService.setUser(data);
+           // console.log(data);
+
             alert('Register Succeed')
+            props.history.push('/')
         }).catch((error) => {
             alert(error.message);
         });
-        props.history.push('/')
+
 
     } else {
         alert('Sorry, the passwords are not same.')
