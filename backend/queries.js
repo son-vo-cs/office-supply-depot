@@ -107,7 +107,7 @@ const registerUser = (request, response) => {
 			{
 				response.status(404).json("User already exists");
 			}
-	});
+		});
 
 
 }
@@ -118,23 +118,23 @@ const loginUser = (request, response) => {
 	const {email, password} = request.body;
 	getDatabase('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password],
 		(result)=>{
-		if (result === undefined)
-		{
-			response.status(404).json(`Invalid email/password combination.`);
-		}
-		else
-		{
-			let token = jwtauth.generate({email: email});
-			getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
-				var userId = t.userid;
-				getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
-				{
-					response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "token": token});
-				})
+			if (result === undefined)
+			{
+				response.status(404).json(`Invalid email/password combination.`);
+			}
+			else
+			{
+				let token = jwtauth.generate({email: email});
+				getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
+					var userId = t.userid;
+					getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
+					{
+						response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "token": token});
+					})
 
-			});
-		}
-	});
+				});
+			}
+		});
 }
 
 const getAll = (request, response) => {
@@ -238,7 +238,7 @@ const checkAvailable = (request, response) =>{
 				else
 					response.status(200).json("All Available");
 			}
-	});
+		});
 }
 
 
@@ -265,14 +265,14 @@ const submitOrder = (request, response) => {
 							var values = getpair2(orderid,itemids,warehousenums,quantities,priorities);
 							setDatabase("INSERT INTO itemsinorder (orderid, itemid, warehousenum, quantity, priority,status) VALUES " + values,
 								[],(t)=>{
-								getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
-									if (t5 === undefined)
-									{
-										setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
+									getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
+										if (t5 === undefined)
+										{
+											setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
 
-										});
-									}
-								});
+											});
+										}
+									});
 									getDatabase("SELECT userid FROM useraddress WHERE userid = $1", [userid], (t3)=>{
 										if (t3 === undefined)
 										{
@@ -290,7 +290,7 @@ const submitOrder = (request, response) => {
 												});
 										}
 									});
-							});
+								});
 						}
 					});
 				});
@@ -316,7 +316,10 @@ const getOrderHistory = (request, response) =>{
 const getOrderHistoryDetail = (request, response) =>
 {
 	const {orderid} = request.body;
-	getDatabase('SELECT * FROM itemsinorder WHERE orderid = ' + orderid, "",
+	var qr = "WITH history AS(";
+	qr = qr + "SELECT * FROM itemsinorder WHERE itemsinorder.orderid = " + orderid + ")";
+	qr = qr + "SELECT orderid, items.itemid, name, items.quantity, priority, status, price, url FROM items, history WHERE items.itemid = history.itemid"
+	getDatabase(qr, "",
 		(result)=>{
 			if (result === undefined)
 			{
@@ -349,11 +352,11 @@ const getShipAddress = (request, response) =>
 			else
 			{
 				getDatabase("SELECT itemid, orderid FROM itemsinorder WHERE status=" + "'processing'" , "",(t)=>{
-						for (var i = 0; i < t.length; i++)
-						{
-							t[i]["shipaddress"] = helperShipAddress(result, t[i].orderid);
-						}
-						response.status(200).json(t);
+					for (var i = 0; i < t.length; i++)
+					{
+						t[i]["shipaddress"] = helperShipAddress(result, t[i].orderid);
+					}
+					response.status(200).json(t);
 				});
 			}
 		});
@@ -368,7 +371,7 @@ const markDelivered = (request, response) =>
 			if (t5 === undefined)
 			{
 				setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
-						response.status(200).json("Update status sucessfully for item " + itemid + " in  order " + orderid);
+					response.status(200).json("Update status sucessfully for item " + itemid + " in  order " + orderid);
 				});
 			}
 		});
