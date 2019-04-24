@@ -15,7 +15,7 @@ function validate(req, res, next) {
 		jwt.verify(token, config.secret, (err, dec) => {
 			if (err) {
 				console.log(err);
-				return res.json({
+				return res.status(404).json({
 					success: false,
 					message: 'Token is not valid'
 				});
@@ -25,7 +25,7 @@ function validate(req, res, next) {
 			}
 		});
 	} else {
-		return res.json({
+		return res.status(404).json({
 			success: false,
 			message: 'Auth token is not supplied'
 		});
