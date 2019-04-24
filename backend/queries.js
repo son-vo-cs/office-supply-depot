@@ -366,18 +366,30 @@ const getShipAddress = (request, response) =>
 
 const markDelivered = (request, response) =>
 {
-	const {orderid, itemid} = request.body;
-	// console.log(orderid);
-	setDatabase("UPDATE itemsinorder SET status = 'delivered' WHERE orderid = " + orderid + " AND itemid = " + itemid,[],(t)=>{
-		getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
-			if (t5 === undefined)
-			{
-				setDatabase("UPDATE orders SET status = 'delivered' WHERE orderid = ?",[orderid],(t6)=>{
-					response.status(200).json("Update status sucessfully for item " + itemid + " in  order " + orderid);
+
+	const {orderids} = request.body;
+	var qr = "WITH Tmp(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
+	var qr0 = qr + " SELECT * FROM orders WHERE orderid IN (SELECT orderid FROM Tmp)";
+	qr0 = "WITH history AS (" + qr0 + ") SELECT orderid, status FROM history WHERE status = 'processing'";
+	var qr1 = qr + " UPDATE itemsinorder SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
+	var qr2 = qr + " UPDATE orders SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
+
+	getDatabase(qr0,"",(t1)=>{
+		if (t1.length != orderids.length)
+		{
+			response.status(404).json("Some of the orderid does not need to be updated");
+		}
+		else
+		{
+			setDatabase(qr1,[],(t)=>{
+				setDatabase(qr2,[],(t6)=>{
+					response.status(200).json("Update status sucessfully");
 				});
-			}
-		});
+			});
+
+		}
 	});
+
 
 }
 
