@@ -234,7 +234,7 @@ const checkAvailable = (request, response) =>{
 					}
 				}
 				if (ids.length > 0)
-					response.status(200).json(ids);
+					response.status(404).json(ids);
 				else
 					response.status(200).json("All Available");
 			}
