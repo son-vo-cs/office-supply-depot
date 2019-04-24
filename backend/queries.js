@@ -244,12 +244,14 @@ const checkAvailable = (request, response) =>{
 
 
 const submitOrder = (request, response) => {
-	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priorities, warehousenums, timestamp} = request.body;
+	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priority, warehousenums, timestamp} = request.body;
 	var shipaddress = address + ", " + city + ", " + state + " " + zip;
 	var pair = getpair(itemids, quantities);
 	var qr = "WITH Tmp(id,quantity) AS (VALUES" + pair + ") UPDATE items SET quantity = quantity - ";
 	qr = qr + "(SELECT quantity FROM Tmp WHERE items.rowid = Tmp.id) WHERE rowid IN (SELECT id FROM Tmp)";
-
+	var priorities = [];
+	for (var i = 0; i < itemids.length; i++)
+		priorities.push(priority);
 
 	setDatabase(qr, [],
 		(result) => {
