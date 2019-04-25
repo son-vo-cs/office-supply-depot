@@ -172,7 +172,7 @@ const getItem = (request, response) =>{
 const addItem = (request, response) =>{
 	const {warehouseid, quantity, price, name, weight, description, category, url} = request.body;
 
-	setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category,imagename) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+	setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category,url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
 		[warehouseid, quantity, price, name, weight, description, category, url],(result)=>
 		{
 			response.status(200).json("Item added successfully");
@@ -248,7 +248,7 @@ const submitOrder = (request, response) => {
 	var shipaddress = address + ", " + city + ", " + state + " " + zip;
 	var pair = getpair(itemids, quantities);
 	var qr = "WITH Tmp(id,quantity) AS (VALUES" + pair + ") UPDATE items SET quantity = quantity - ";
-	qr = qr + "(SELECT quantity FROM Tmp WHERE items.rowid = Tmp.id) WHERE rowid IN (SELECT id FROM Tmp)";
+	qr = qr + "(SELECT quantity FROM Tmp WHERE items.itemid = Tmp.id) WHERE rowid IN (SELECT id FROM Tmp)";
 	var priorities = [];
 	for (var i = 0; i < itemids.length; i++)
 		priorities.push(priority);
@@ -393,6 +393,80 @@ const markDelivered = (request, response) =>
 
 }
 
+const deleteItems = (request, response) =>
+{
+
+	const {itemids} = request.body;
+	var qr = "WITH Tmp(id) AS (VALUES" + helperAvailable(itemids) + ")";
+	var qr0 = qr + "DELETE FROM items WHERE itemid IN (SELECT id FROM Tmp)";
+	var qr1 = qr + "SELECT itemid FROM items WHERE itemid IN (SELECT id FROM Tmp)";
+	getDatabase(qr1,"",(t1)=>
+	{
+		if (t1.length != itemids.length)
+		{
+			response.status(404).json("Some of the item ids are not in the database!");
+		}
+		else
+		{
+			//
+			setDatabase(qr0,[],(t)=>
+			{
+
+				response.status(200).json("Successfully deleted the items");
+
+			});
+		}
+	});
+}
+
+const setPrice = (request, response) =>
+{
+
+	const {itemids, prices} = request.body;
+	var qr = "WITH Tmp(id) AS (VALUES" + helperAvailable(itemids) + ")";
+	qr = qr + "SELECT itemid FROM items WHERE itemid IN (SELECT id FROM Tmp)";
+
+	var pair = getpair(itemids, prices);
+	var qr1 = "WITH Tmp(id,price) AS (VALUES" + pair + ") UPDATE items SET price =  ";
+	qr1 = qr1 + "(SELECT price FROM Tmp WHERE items.itemid = Tmp.id) WHERE itemid IN (SELECT id FROM Tmp)";
+
+
+	var negative = 0;
+	for (var i = 0; i < prices.length; i++)
+	{
+		if (prices[i] <= 0)
+		{
+			negative = 1;
+		}
+	}
+	if (negative > 0)
+	{
+		response.status(404).json("Some of the prices are <= 0");
+	}
+	else
+	{
+		getDatabase(qr,"",(t1)=>
+		{
+			if (t1.length != itemids.length)
+			{
+				response.status(404).json("Some of the item ids are not in the database!");
+			}
+			else
+			{
+
+				setDatabase(qr1,[],(t)=>
+				{
+					response.status(200).json("Successfully set prices for items");
+
+				});
+			}
+		});
+	}
+
+
+}
+
+
 
 
 
@@ -407,5 +481,7 @@ module.exports = {
 	getOrderHistory,
 	getOrderHistoryDetail,
 	getShipAddress,
-	markDelivered
+	markDelivered,
+	deleteItems,
+	setPrice
 }
