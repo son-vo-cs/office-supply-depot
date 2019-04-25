@@ -27,6 +27,8 @@ class ApiService {
     getOrderHistoryDetail(data){return this.apiOSD('getOrderHistoryDetail', data)};
     getShipAddress(){return this.apiOSD('getShipAddress')};
     markDelivered(data){return this.apiOSD('markDelivered',data)};
+    deleteItems(data){return this.apiOSD('deleteItems',data)};
+    setPrice(data){return this.apiOSD('setPrice', data)};
 
 }
 
