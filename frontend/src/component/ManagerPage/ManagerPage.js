@@ -142,7 +142,7 @@ class ManagerPage extends Component {
                                     <th> Id </th>
                                     <th> Name </th>
                                     <th> Picture </th>
-                                    <th> Stock </th>
+
                                     <th> Delete </th>
                                 </tr>
                                 </thead>
@@ -158,9 +158,7 @@ class ManagerPage extends Component {
                                         <td>
                                             <img className="rounded managerpicsize" src= {item.url} />
                                         </td>
-                                        <td className="text-center vertical-center">
-                                            {item.quantity}
-                                        </td>
+
                                         <td>
                                             <button
                                                 onClick={() => {this.handleRemoveRow(idx); console.log(this.state.allData, "asdad")}}

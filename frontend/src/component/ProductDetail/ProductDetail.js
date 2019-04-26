@@ -108,40 +108,40 @@ class ProductDetail extends Component {
                                     <a className="nav-link active" id="home-tab" data-toggle="tab" href="#home"
                                        role="tab" aria-controls="home" aria-selected="true">DESCRIPTION</a>
                                 </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" id="profile-tab" data-toggle="tab" href="#profile"
-                                       role="tab" aria-controls="profile" aria-selected="false">PRODUCT INFO</a>
-                                </li>
+                                {/*<li className="nav-item">*/}
+                                    {/*<a className="nav-link" id="profile-tab" data-toggle="tab" href="#profile"*/}
+                                       {/*role="tab" aria-controls="profile" aria-selected="false">PRODUCT INFO</a>*/}
+                                {/*</li>*/}
 
                             </ul>
                             <div className="tab-content" id="myTabContent">
                                 <div className="tab-pane fade show active" id="home" role="tabpanel"
                                      aria-labelledby="home-tab">{this.state.itemData.description}</div>
-                                <div className="tab-pane fade" id="profile" role="tabpanel"
-                                     aria-labelledby="profile-tab"><h5>SpeedyInks Remanufactured Ink Features:</h5>
-                                    <li>It supports the latest ATX12V v2.3 standard and is backward compatible with
-                                        ATX12V 2.2 and ATX12V 2.01 systems
-                                    </li>
-                                    <li>For use in Epson: Stylus NX530, Stylus NX625, WorkForce WF-3520, WorkForce WF-3530, WorkForce WF-3540, WorkForce WF-7010,
-                                        WorkForce WF-7510, WorkForce WF-7520, WorkForce 60, WorkForce 545,
-                                        WorkForce 630, WorkForce 633, WorkForce 635, WorkForce 645, WorkForce 840, and WorkForce 845
-                                    </li>
-                                    <li>Set includes: 1x T127120 1x T12720, 1x T127320, & 1x T127420
-                                    </li>
-                                    <li>Page Yield Black: 945| Colors: 755</li>
-                                    <li>100% Quality Satisfaction Guarantee
-                                    </li>
-                                    <li>The use of aftermarket replacement cartridges and supplies does not void your printer's warranty</li>
-                                    <li>A three year warranty and lifetime access to Corsair’s legendary technical
-                                        support and customer service
-                                    </li>
-                                    <li>Over Current/Voltage/Power Protection, Under Voltage Protection and Short
-                                        Circuit Protection provide complete component safety
-                                    </li>
-                                    <li>Dimensions: 150mm(W) x 86mm(H) x 160mm(L)</li>
-                                    <li>MTBF: 100,000 hours</li>
-                                    <li>Safety Approvals: UL, CUL, CE, CB, FCC Class B, TÜV, CCC, C-tick</li>
-                                </div>
+                                {/*<div className="tab-pane fade" id="profile" role="tabpanel"*/}
+                                     {/*aria-labelledby="profile-tab"><h5>SpeedyInks Remanufactured Ink Features:</h5>*/}
+                                    {/*<li>It supports the latest ATX12V v2.3 standard and is backward compatible with*/}
+                                        {/*ATX12V 2.2 and ATX12V 2.01 systems*/}
+                                    {/*</li>*/}
+                                    {/*<li>For use in Epson: Stylus NX530, Stylus NX625, WorkForce WF-3520, WorkForce WF-3530, WorkForce WF-3540, WorkForce WF-7010,*/}
+                                        {/*WorkForce WF-7510, WorkForce WF-7520, WorkForce 60, WorkForce 545,*/}
+                                        {/*WorkForce 630, WorkForce 633, WorkForce 635, WorkForce 645, WorkForce 840, and WorkForce 845*/}
+                                    {/*</li>*/}
+                                    {/*<li>Set includes: 1x T127120 1x T12720, 1x T127320, & 1x T127420*/}
+                                    {/*</li>*/}
+                                    {/*<li>Page Yield Black: 945| Colors: 755</li>*/}
+                                    {/*<li>100% Quality Satisfaction Guarantee*/}
+                                    {/*</li>*/}
+                                    {/*<li>The use of aftermarket replacement cartridges and supplies does not void your printer's warranty</li>*/}
+                                    {/*<li>A three year warranty and lifetime access to Corsair’s legendary technical*/}
+                                        {/*support and customer service*/}
+                                    {/*</li>*/}
+                                    {/*<li>Over Current/Voltage/Power Protection, Under Voltage Protection and Short*/}
+                                        {/*Circuit Protection provide complete component safety*/}
+                                    {/*</li>*/}
+                                    {/*<li>Dimensions: 150mm(W) x 86mm(H) x 160mm(L)</li>*/}
+                                    {/*<li>MTBF: 100,000 hours</li>*/}
+                                    {/*<li>Safety Approvals: UL, CUL, CE, CB, FCC Class B, TÜV, CCC, C-tick</li>*/}
+                                {/*</div>*/}
 
                             </div>
 
