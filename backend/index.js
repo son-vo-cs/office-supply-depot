@@ -5,6 +5,7 @@ const app = express();
 const port = 3006;
 const db = require('./queries');
 const jwtauth = require('./auth/jwtauth');
+const fileUpload = require('express-fileupload');
 
 app.use(bodyParser.json());
 app.use(
@@ -15,6 +16,9 @@ app.use(
 
 app.use(cors());
 app.options('*', cors());
+
+app.use(express.static("data/images"));
+app.use(fileUpload());
 
 app.get('/', (request, response) => {
 	response.json({info: 'Node.js, Express, and Postgres API'});

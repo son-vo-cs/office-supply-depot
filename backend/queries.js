@@ -213,15 +213,28 @@ const getItem = (request, response) =>{
 
 
 const addItem = (request, response) =>{
-	const {warehouseid, quantity, price, name, weight, description, category, url} = request.body;
+	const {warehouseid, quantity, price, name, weight, description, category} = request.body;
 	getDatabase('SELECT itemid, quantity from items WHERE name = $1', [name],(t)=>
 	{
 		if (t === undefined)
 		{
-			setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category,url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-				[warehouseid, quantity, price, name, weight, description, category, url],(result)=>
+			var newItemID = 0;
+			setDatabase('INSERT INTO items (warehouseid, quantity, price, name, weight, description, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+				[warehouseid, quantity, price, name, weight, description, category],(result)=>
 				{
-					response.status(200).json("Item added successfully");
+					getDatabase("SELECT itemid FROM items WHERE name = $1", [name], (t2)=> {
+						newItemID = t2.itemid;
+						var imageFile = request.files.image;
+						var re = /(?:\.([^.]+))?$/;
+						var ext = re.exec(imageFile.name)[1];
+						console.log(ext);
+						imageFile.mv(__dirname + "/data/images/" + newItemID + "." + ext);
+						var url = "localhost:3006/" + newItemID + "." + ext;
+						setDatabase('UPDATE items SET url = $1 WHERE itemid = $2', [url, newItemID], (t0)=> {
+							response.status(200).json("Successfully added new item");
+						});
+					})
+					
 				});
 		}
 		else
