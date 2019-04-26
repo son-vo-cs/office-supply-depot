@@ -31,7 +31,7 @@ app.post('/getOrderHistory', jwtauth.validate,db.getOrderHistory);
 app.post('/getOrderHistoryDetail', jwtauth.validate,db.getOrderHistoryDetail);
 app.post('/getShipAddress', jwtauth.validate,db.getShipAddress);
 app.post('/markDelivered', jwtauth.validate,db.markDelivered);
-app.post('/deleteItems', jwtauth.validate, db.deleteItems);
+app.post('/deleteItem', jwtauth.validate, db.deleteItem);
 
 app.listen(port, () => {
 	console.log(`App running on port ${port}.`);
