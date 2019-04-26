@@ -9,7 +9,7 @@ const AddItem = (props) => {
         let body = {
             authorization: UserStoreService.getToken(),
             warehouseid: event.target.wareNum.value,
-            quantity: event.target.itemQuantity.value,
+            quantity: parseInt(event.target.itemQuantity.value,10),
             price: event.target.price.value,
             name: event.target.itemName.value,
             weight: event.target.itemWeight.value,
@@ -19,6 +19,7 @@ const AddItem = (props) => {
         };
 
 
+        console.log(parseInt(event.target.itemQuantity.value,10),"parse");
         let all = UserStoreService.getAllItem()[UserStoreService.getAllItem().length - 1].itemid;
         let itemNames = [];
         let itemName = "";
@@ -33,6 +34,7 @@ const AddItem = (props) => {
             console.log(all,"show the last one Id");
             UserStoreService.addAllItem(newItem);
         }
+
 
 
         console.log(UserStoreService.getAllItem(), "all item");

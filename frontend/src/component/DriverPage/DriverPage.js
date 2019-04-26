@@ -17,6 +17,7 @@ class DriverPage extends Component {
         addresses: [],
         open: false,
         driverOrderIds: [],
+        wareHouseId: null,
     };
 
     componentDidMount() {
@@ -32,13 +33,15 @@ class DriverPage extends Component {
         userService.getShipAddress(JSON.stringify(body)).then((data) => {
 
             console.log(data,"data");
+            console.log(UserStoreService.getToken());
             for (let i = 0; i < data.length; i++){
                 address = data[i].shipadd;
                 addresses.push(address);
                 driverOrderId = data[i].orderid;
                 driverOrderIds.push(driverOrderId)
             }
-           this.setState({addresses: addresses, driverOrderIds: driverOrderIds})
+
+           this.setState({addresses: addresses, driverOrderIds: driverOrderIds, wareHouseId: data[0].warehouseid})
 
         }).catch((error) => {
             alert(error.message);
@@ -136,7 +139,7 @@ clickHandler = (event,props) =>{
 
                 {this.state.clicked &&
                 <div className="inline">
-                    <GoogleMap addresses = {this.state.addresses}/>
+                    <GoogleMap addresses = {this.state.addresses} warehouse = {this.state.wareHouseId}/>
                 </div>}
             </div>
 
