@@ -102,49 +102,48 @@ class Checkout extends Component {
         }
         else
             this.setState({shippingMethodDisable: true, submitDeliveryMethod: true, showPaymentStep: true});
-        if(this.state.pickup === "1")
+        if(this.state.pickup === "1") // Over $100, Free
         {
             if(UserStoreService.getTotalWeight() >= 15)
             {
                 this.setState({
-                    priority: 3
+                    priority: 3  // Free 2-day truck
                 })
             }
             else{
                 this.setState({
-                    priority: 0
+                    priority: 0  // Free 1-day drone 
                 })
             }
         }
-        if(this.state.pickup === "2")
+        if(this.state.pickup === "2")  // Over $100,  Pay
         {
 
             UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 25);
             this.setState({
-                priority: 2
+                priority: 2  // Pay $25 for 1-day truck
             })
 
         }
-        if(this.state.pickup === "3")
+        if(this.state.pickup === "3")  // Free Self-pickup at warehouse
         {
             this.setState({
-                priority: 1
+                priority: 1 
             })
 
         }
-
-        if(this.state.pickup === "4")
+        if(this.state.pickup === "4")  // Under $100
         {
-            UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 25);
+            UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 20);
             if(UserStoreService.getTotalWeight() >= 15)
             {
                 this.setState({
-                    priority: 3
+                    priority: 3  // Pay $20 for 2-day truck 
                 })
             }
             else{
                 this.setState({
-                    priority: 0
+                    priority: 0  // Free 1-day drone
                 })
             }
 
@@ -173,7 +172,7 @@ class Checkout extends Component {
                     <div className="card-box">
                         <h4 className="m-t-0 header-title"><b>Shipping Information</b></h4>
                         <p className="text-muted m-b-30 font-13">
-                            Check out Info
+                            Enter checkout information
                         </p>
                         <form onSubmit={(event) => this.shippingAddressSubmit(event)}>
                             <div className="form-group">
@@ -227,28 +226,26 @@ class Checkout extends Component {
                         <h4 className="m-t-0 header-title"><b>Shipping method</b></h4>
 
                         <p className="text-muted m-b-30 font-13">
-                           shipping Information
+                           Pick shipping option
                         </p>
 
-                        <table className="table table-responsive">
-
+                        <table className="table">
                             {this.state.over &&
                                 <tbody>
                                 <tr>
                                     <td>
                                         <div className="radio">
-                                            <label><input type="radio" id='express' name="optradio"
+                                            <label><input type="radio" id='regular' name="optradio"
                                                           className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
-                                                Everyday Free Shipping
-                                                Transit time: 2 business days
+                                                <strong>Everyday Free Shipping</strong>
                                             </label>
+                                            <p className="tab">Transit time: 2 business days</p>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="radiotext">
                                             <label htmlFor='free'>
-                                                <font color="red">FREE
-                                                </font>
+                                                <font color="red">FREE</font>
                                             </label>
                                         </div>
                                     </td>
@@ -256,11 +253,11 @@ class Checkout extends Component {
                                 <tr>
                                     <td>
                                         <div className="radio">
-                                            <label><input type="radio" id='regular' name="optradio"
+                                            <label><input type="radio" id='express' name="optradio"
                                                           className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "2"})}}/>
-                                                Premium Shipping
-                                                Transit time: 1 business day
-                                            </label>
+                                                <strong>Premium Shipping</strong>
+                                            </label>   
+                                            <p className="tab">Transit time: 1 business day</p>
                                         </div>
                                     </td>
                                     <td>
@@ -275,7 +272,7 @@ class Checkout extends Component {
                                             <label><input type="radio" id='express' name="optradio"
                                                           className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"});console.log("asdad")
                                                           }}/>
-                                                Pick up in our Warehouse
+                                                <strong>Pick up in our Warehouse</strong>
                                             </label>
                                         </div>
                                     </td>
@@ -287,9 +284,6 @@ class Checkout extends Component {
                                     </td>
                                 </tr>
                                 </tbody>
-
-
-
                             }
 
                             {this.state.under &&
@@ -300,8 +294,8 @@ class Checkout extends Component {
                                     <div className="radio">
                                         <label><input type="radio" id='regular' name="optradio"
                                                       className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "4"})}}/>
-                                            Standard Shipping
-                                            Transit time: 2 business day
+                                            <strong>Standard Shipping</strong>
+                                            <p className="tab">Transit time: 2 business days</p>
                                         </label>
                                     </div>
                                 </td>
@@ -315,7 +309,7 @@ class Checkout extends Component {
                                 <td>
                                     <div className="radio">
                                         <label><input type="radio" id='express' name="optradio"
-                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
+                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"})}}/>
                                             Pick up in our Warehouse
                                         </label>
                                     </div>
@@ -329,14 +323,12 @@ class Checkout extends Component {
                             </tr>
                             </tbody>
                             }
-                            <div className="form-group text-right m-b-0">
+                        </table>
+                        <div className="form-group text-right m-b-0">
                                 <button onClick={(event) => this.submitDelivery(event)} className="btn btn-danger" type="submit">
                                     Continue
                                 </button>
-
-                            </div>
-
-                        </table>
+                        </div>
                     </div>}
 
 
@@ -345,7 +337,7 @@ class Checkout extends Component {
                         <h4 className="m-t-0 header-title"><b>Payment</b></h4>
 
                         <p className="text-muted m-b-30 font-13">
-                            Payment Info
+                            Enter payment information
                         </p>
 
                         <div className="form-group">

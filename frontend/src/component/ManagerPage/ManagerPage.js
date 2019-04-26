@@ -54,7 +54,7 @@ class ManagerPage extends Component {
         // fetch data from backend and assign all to displayCare
     }
 
-    handleRemoveRow = (idx) => {
+    handleRemoveRow = (idx, delAmt) => {
         if(UserStoreService.getToken() !== undefined) {
 
             let datas = this.state.allData[idx];
@@ -68,6 +68,7 @@ class ManagerPage extends Component {
                 itemid: item,
             };
 
+            console.log("delAmt");
             userService.deleteItem(JSON.stringify(body)).then((data) => {
 
                 console.log(data);
@@ -138,21 +139,27 @@ class ManagerPage extends Component {
                             >
                                 <thead>
                                 <tr>
-                                    <th className="text-center"> Id </th>
-                                    <th className="text-center"> Name </th>
-                                    <th className="text-center"> Picture </th>
-                                    <th className="text-center"> Delete </th>
+                                    <th> Id </th>
+                                    <th> Name </th>
+                                    <th> Picture </th>
+                                    <th> Stock </th>
+                                    <th> Delete </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {this.state.allData.map((item, idx) => (
                                     <tr id="addr0" key={idx}>
-                                        <td>{item.itemid}</td>
+                                        <td>
+                                            {item.itemid}
+                                        </td>
                                         <td>
                                             {item.name}
                                         </td>
                                         <td>
                                             <img className="rounded managerpicsize" src= {item.url} />
+                                        </td>
+                                        <td className="text-center vertical-center">
+                                            {item.quantity}
                                         </td>
                                         <td>
                                             <button

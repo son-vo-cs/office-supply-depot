@@ -69,8 +69,10 @@ const AddItem = (props) => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="wareNum">Warehouse #<span className="text-danger">*</span></label>
-                        <input type="number" name="wareNum" required
-                               placeholder="Enter Warehouse number" className="form-control" id="wareNum"/>
+                        <select class = "form-control" type="number" name="wareNum" id="wareNum">
+                            <option value = "1">Warehouse 1</option>
+                            <option value = "2">Warehouse 2</option>
+                        </select>
                     </div>
                     <div className="form-group">
                         <label htmlFor="itemQuantity">Quantity<span className="text-danger">*</span></label>
@@ -89,7 +91,7 @@ const AddItem = (props) => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="itemWeight">Weight<span className="text-danger">*</span></label>
-                        <input type="number" step="0.01" name="itemWeight" required
+                        <input type="number" step="1" name="itemWeight" required
                                placeholder="Enter Item Weight" className="form-control" id="itemWeight"/>
                     </div>
                     <div className="form-group">
@@ -99,8 +101,15 @@ const AddItem = (props) => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="itemCategory">Category<span className="text-danger">*</span></label>
-                        <input type="text" name="itemCategory" required
-                               placeholder="Enter Item Category" className="form-control" id="itemCategory"/>
+                        <select class = "form-control" name="itemCategory" id="itemCategory">
+                            <option value = "electronic">Electronic</option>
+                            <option value = "paper">Paper</option>
+                            <option value = "office supplies">Office Supplies</option>
+                            <option value = "school supplies">School Supplies</option>
+                            <option value = "ink & toner">Ink & Toner</option>
+                            <option value = "furniture">Furniture</option>
+                            <option value = "cleaning">Cleaning</option>
+                        </select>
                     </div>
                     <div className="form-group">
                         <label htmlFor="itemCategory">Picture<span className="text-danger">*</span></label>
