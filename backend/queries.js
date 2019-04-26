@@ -490,7 +490,6 @@ const getShipAddress = (request, response) =>
 						}
 					}
 				}
-				console.log(day_2);
 				var idfinal = 2;
 				if (three > 0)
 				{
