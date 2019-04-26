@@ -61,17 +61,18 @@ function getpair(id,quantity)
 	return str;
 }
 
-function getpair2(orderid, itemids, warehousenums, quantities, priorities)
+function getpair2(orderid, itemids, warehousenums, quantities, priority)
 {
 	var str = "";
+	var status = "'processing'";
+	if (priority < 2)
+	{
+		status = "'delivered'";
+	}
 	for (var i = 0; i < itemids.length; i++)
 	{
-		var status = "'processing'";
-		if (priorities[i] < 2)
-		{
-			status = "'delivered'";
-		}
-		str = str + "(" + orderid + "," + itemids[i] + "," + warehousenums[i] + "," + quantities[i] + "," + priorities[i] + "," + status + "),";
+
+		str = str + "(" + orderid + "," + itemids[i] + "," + warehousenums[i] + "," + quantities[i] + "," + status + "),";
 	}
 	return str.slice(0,-1);
 }
@@ -270,8 +271,8 @@ const submitOrder = (request, response) => {
 
 	setDatabase(qr, [],
 		(result) => {
-			setDatabase("INSERT INTO orders (userid, shipadd, phone, totalprice, orderdate, status) VALUES (?,?,?,?,?,?)",
-				[userid,shipaddress, phone, totalprice, timestamp, "processing"], (t)=>{
+			setDatabase("INSERT INTO orders (userid, shipadd, phone, totalprice, orderdate, status, priority) VALUES (?,?,?,?,?,?,?)",
+				[userid,shipaddress, phone, totalprice, timestamp, "processing",priority], (t)=>{
 					getDatabase("SELECT orderid FROM orders WHERE userid = " + userid, "",(t1)=>{
 						if (t1 === undefined)
 						{
@@ -279,8 +280,8 @@ const submitOrder = (request, response) => {
 						}
 						else {
 							var orderid = t1[t1.length-1].orderid;
-							var values = getpair2(orderid,itemids,warehousenums,quantities,priorities);
-							setDatabase("INSERT INTO itemsinorder (orderid, itemid, warehousenum, quantity, priority,status) VALUES " + values,
+							var values = getpair2(orderid,itemids,warehousenums,quantities,priority);
+							setDatabase("INSERT INTO itemsinorder (orderid, itemid, warehousenum, quantity,status) VALUES " + values,
 								[],(t)=>{
 									getDatabase("SELECT itemid FROM itemsinorder WHERE status = 'processing' AND orderid = " + orderid,[],(t5)=>{
 										if (t5 === undefined)
@@ -335,7 +336,7 @@ const getOrderHistoryDetail = (request, response) =>
 	const {orderid} = request.body;
 	var qr = "WITH history AS(";
 	qr = qr + "SELECT * FROM itemsinorder WHERE itemsinorder.orderid = " + orderid + ")";
-	qr = qr + "SELECT orderid, items.itemid, name, items.quantity, priority, status, price, url FROM items, history WHERE items.itemid = history.itemid"
+	qr = qr + "SELECT orderid, items.itemid, name, items.quantity, status, price, url FROM items, history WHERE items.itemid = history.itemid"
 	getDatabase(qr, "",
 		(result)=>{
 			if (result === undefined)
@@ -358,23 +359,45 @@ function helperShipAddress(arr, orderid)
 			return arr[i].shipadd;
 	}
 }
+function getDifferentDate(date)
+{
+	var firstDate = new Date(date);
+	var	secondDate = new Date();
+	var timeDifference = Math.abs(secondDate.getTime() - firstDate.getTime());
+	var differentDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
+	return differentDays - 1;
+}
+
 const getShipAddress = (request, response) =>
 {
-	getDatabase("SELECT orderid, shipadd FROM orders WHERE status= " + "'processing'", "",
+	getDatabase("SELECT orderid, shipadd, priority, orderdate FROM orders WHERE status= " + "'processing'", "",
 		(result)=>{
 			if (result === undefined)
 			{
-				response.status(404).json(`Cannot get order history`);
+				response.status(404).json(`There are no orders that need to be delivered`);
 			}
 			else
 			{
-				getDatabase("SELECT itemid, orderid FROM itemsinorder WHERE status=" + "'processing'" , "",(t)=>{
-					for (var i = 0; i < t.length; i++)
+				var day_2 = [];
+				for (var i = 0; i < result.length; i++)
+				{
+					if (result[i].priority === 2)
 					{
-						t[i]["shipaddress"] = helperShipAddress(result, t[i].orderid);
+						delete result[i].priority;
+						delete result[i].orderdate;
+						day_2.push(result[i]);
 					}
-					response.status(200).json(t);
-				});
+					else if (result[i].priority > 2)
+					{
+						if (getDifferentDate(result[i].orderdate) > 0)
+						{
+							delete result[i].priority;
+							delete result[i].orderdate;
+							day_2.push(result[i]);
+						}
+					}
+				}
+				response.status(200).json(day_2);
 			}
 		});
 }
@@ -408,31 +431,46 @@ const markDelivered = (request, response) =>
 
 }
 
-const deleteItems = (request, response) =>
+const deleteItem = (request, response) =>
 {
 
-	const {itemids} = request.body;
-	var qr = "WITH Tmp(id) AS (VALUES" + helperAvailable(itemids) + ")";
-	var qr0 = qr + "DELETE FROM items WHERE itemid IN (SELECT id FROM Tmp)";
-	var qr1 = qr + "SELECT itemid FROM items WHERE itemid IN (SELECT id FROM Tmp)";
-	getDatabase(qr1,"",(t1)=>
+	const {itemid} = request.body;
+	getDatabase("SELECT * FROM items WHERE itemid = $1",[itemid],(t)=>
 	{
-		if (t1.length != itemids.length)
+		if (t === undefined)
 		{
-			response.status(404).json("Some of the item ids are not in the database!");
+			response.status(404).json("The itemid is incorrect");
 		}
 		else
 		{
-			//
-			setDatabase(qr0,[],(t)=>
+			setDatabase("DELETE FROM items WHERE itemid = $1",[itemid],(t1)=>
 			{
-
-				response.status(200).json("Successfully deleted the items");
-
+				response.status(200).json("Sucessfully deleted the item");
 			});
+
 		}
 	});
+
+	// response.status(200).json("hahah");
+	// getDatabase(qr1,"",(t1)=>
+	// {
+	// 	if (t1.length != itemids.length)
+	// 	{
+	// 		response.status(404).json("Some of the item ids are not in the database!");
+	// 	}
+	// 	else
+	// 	{
+	// 		//
+	// 		setDatabase(qr0,[],(t)=>
+	// 		{
+	//
+	// 			response.status(200).json("Successfully deleted the items");
+	//
+	// 		});
+	// 	}
+	// });
 }
+
 
 // const setPrice = (request, response) =>
 // {
@@ -497,5 +535,5 @@ module.exports = {
 	getOrderHistoryDetail,
 	getShipAddress,
 	markDelivered,
-	deleteItems,
+	deleteItem
 }
