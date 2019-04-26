@@ -22,7 +22,7 @@ class DriverPage extends Component {
     componentDidMount() {
 
         let body = {
-            authorization: UserStoreService.getToken(),
+            authorization: UserStoreService.getToken()
         };
 
         let address = "";

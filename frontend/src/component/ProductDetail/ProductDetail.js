@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import "./ProductDetail.css";
 import ink1 from "../images/ink1.jpg";
+import logo from "../images/ezgif-1-e382b6df9dbb.png";
 import StarRatings from 'react-star-ratings';
 import userService from "../../common/services/User/UserService";
 import userStoreService from "../../common/services/User/UserStoreService";
@@ -51,16 +52,34 @@ class ProductDetail extends Component {
     render() {
         return (
             <div>
+                
             <div className="container-fluid">
                 <div className="content-wrapper">
-                    <div className="item-container">
+                    <div className="item-panel">
+                        <div className="row">
+                            <div className="col-xs-6">
+                                <h5>
+                                    <span className="glyphicon glyphicon-shopping-cart"/> Shopping
+                                    Cart
+                                </h5>
+                            </div>
+                        <div className="col-xs-6 padButton">
+                            <Link to="/">
+                                <button type="button" className=" btn btn-link btn-sm">
+                                    <span className="glyphicon glyphicon-chevron-left"></span>
+                                    Continue
+                                    shopping
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
                         <div className="container">
                             <div className="col-md-12">
                                 <div className="row">
                                 <div className="product col-md-3 service-image-left margindefine">
 
 
-                                        <img id="item-display"
+                                        <img className="img-container" 
                                              src={this.state.itemData.url}
                                              alt=""/>
 
@@ -72,9 +91,6 @@ class ProductDetail extends Component {
                             <div className="col-md-7">
                                 <div className="product-title">{this.state.itemData.name}</div>
                                 <div className="product-desc">Weight: {this.state.itemData.weight} lb</div>
-                                <div className="product-rating">
-                                    <StarRatings name="small-rating" caption="Small!" size={30} totalStars={5} rating={4.5} starRatedColor="gold" />
-                                </div>
                                 <hr/>
                                     <div className="product-price">$ {this.state.itemData.price}</div>
 

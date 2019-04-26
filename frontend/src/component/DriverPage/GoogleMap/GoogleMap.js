@@ -7,6 +7,9 @@ export default class GoogleMap extends Component{
     state = {
         center: { lat: 37.335141, lng: -121.881093 },
         addresses: this.props.addresses,
+        warehouse: null,
+        warehouse1: "1 Washington Sq, San Jose, CA 95192",
+        warehouse2: "500 El Camino Real, Santa Clara, CA 95053"
 
     };
 
@@ -76,7 +79,6 @@ export default class GoogleMap extends Component{
             var currentLocation = new_pos;
             address.unshift(currentLocation);
 
-
             const request = {
                 waypoints: [],
                 optimizeWaypoints: true,
@@ -87,7 +89,7 @@ export default class GoogleMap extends Component{
             // process array of addresses
             for(var i = 0; i < address.length; i++)
             {
-                // set origin
+                // set origin = current location
                 if (i === 0) request.origin = address[i];
                 // set destination
                 else if (i === address.length - 1) request.destination = address[i];
