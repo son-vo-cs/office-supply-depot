@@ -12,6 +12,8 @@ class Cart extends Component {
         qualities: [],
         itemList: [],
         totalPrice: [],
+        totalWeight: [],
+        wareHouseNumbers: [],
     };
 
     componentDidMount() {
@@ -27,6 +29,10 @@ class Cart extends Component {
         let price = [];
         let tPrice = 0;
         let totalP = 0;
+        let wareHouse = [];
+
+        let tWeight = 0;
+        let weight = [];
         for (let i = 0; i < this.state.itemId.length; i++) {
             let body = {
                 itemid: this.state.itemId[i],
@@ -35,11 +41,35 @@ class Cart extends Component {
             userService.getItem(JSON.stringify(body)).then((data) => {
                 console.log(data);
                 list.push(data);
+
+                // Set WareHouse Id
+                wareHouse.push(data.warehouseid);
+                this.setState({wareHouseNumbers: wareHouse});
+                console.log(this.state.wareHouseNumbers,"ware house ids");
+                UserStoreService.setWareHouseId(this.state.wareHouseNumbers);
+
+                // Set Total Price
                 tPrice =+ data.price * this.state.qualities[i];
                 price.push(tPrice);
                 this.setState({totalPrice: price});
-                console.log(tPrice,"dsafhjgfddasfgjf");
-                console.log(this.state.totalPrice,"dsafhjgfddasfgjf");
+                // console.log(tPrice,"dsafhjgfddasfgjf");
+                // console.log(this.state.totalPrice,"dsafhjgfddasfgjf");
+                UserStoreService.setTotalPrice(this.state.totalPrice.reduce(function (acc,currentValue) {
+                    return acc + currentValue;
+                }, 0).toFixed(2));
+
+                // Set Total Weight
+                tWeight =+ data.weight * this.state.qualities[i];
+                weight.push(tWeight);
+                this.setState({totalWeight: weight});
+                // console.log(tPrice,"dsafhjgfddasfgjf");
+                // console.log(this.state.totalPrice,"dsafhjgfddasfgjf");
+                UserStoreService.setTotalWeight(this.state.totalWeight.reduce(function (acc,currentValue) {
+                    return acc + currentValue;
+                }, 0).toFixed(2));
+
+
+                // Set Shopping Cart List
                 this.setState({itemList: list});
             }).catch((error) => {
                 alert(error.message);
@@ -56,7 +86,13 @@ class Cart extends Component {
         }
         this.setState({qualities: quality});
 
+        // Set Item Ids
+        UserStoreService.setItemId(this.state.itemId);
 
+        //
+        // // Set Quantities
+        // UserStoreService.setQuantities(this.state.qualities);
+        // console.log(this.state.qualities,"quantities")
 
 
     }
@@ -64,21 +100,84 @@ class Cart extends Component {
     handleRemoveRow = (idx) => {
 
 
+
         let r = this.state.itemList[idx];
         let p = this.state.itemId[idx];
+
         let l = this.state.itemId.filter(function (row) {
             return row !== p;
         });
+        let longList = this.state.rows.filter(function (row) {
+            return row !== p;
+        });
+        let q = this.state.qualities.filter(function(value, index, arr){
+
+            return index !== idx;
+
+        });
+        let deletequalities = this.state.qualities.splice(idx,1)
+
+
+        // let totalPrice = 0;
+        // for(let i = 0; i < q.length; i++){
+        //     totalPrice = totalPrice + q[i] * this.state.itemList[i].price;
+        // }
+        console.log(q,"myqualitiy")
         this.setState({
             itemList: this.state.itemList.filter(function (row) {
+
                 return row !== r;
-            }),
+
+            }), itemId: l, qualities: q, rows: longList,
         });
-        UserStoreService.setShoppingCart(l);
+
+   //     console.log(this.state.totalPrice - (r.price * deletequalities), "newPrice")
+        console.log(l,"itemId list");
+        console.log(longList,"item long list");
+        console.log(this.state.itemList,"item list");
+        UserStoreService.setShoppingCart(longList);
+        UserStoreService.setQuantities(q);
+        UserStoreService.setTotalPrice((UserStoreService.getTotalPrice() - r.price * deletequalities).toFixed(2));
 
 
     };
 
+    checkAvailable = (event,props) => {
+        UserStoreService.setQuantities(this.state.qualities);
+        event.preventDefault();
+        let body = {
+            authorization: UserStoreService.getToken(),
+            itemids: this.state.itemId,
+            quantities: this.state.qualities,
+        };
+        userService.checkAvailable(JSON.stringify(body)).then((data) => {
+             console.log(data);
+
+            alert(data);
+            props.history.push('/checkout')
+        }).catch((error) => {
+            alert(error.message);
+        });
+
+
+
+    };
+
+    getTotalPrice = () => {
+
+        console.log(this.handleRemoveRow.r,"my r")
+        if(this.handleRemoveRow.r !== undefined && this.handleRemoveRow.deletequalities !== undefined)
+        {
+            return this.state.totalPrice.reduce(function (acc,currentValue) {
+                return acc + currentValue;
+            }, 0).toFixed(2) - this.handleRemoveRow.r.price * this.handleRemoveRow.deletequalities
+        }
+        else {
+            return this.state.totalPrice.reduce(function (acc, currentValue) {
+                return acc + currentValue;
+            }, 0).toFixed(2);
+        }
+    };
 
     render() {
         return (
@@ -89,14 +188,15 @@ class Cart extends Component {
                             <div className="panel panel-info">
                                 <div className="panel-heading">
                                     <div className="panel-title">
-                                        <div className="row padButtom">
+                                        <div className="row padHeader">
                                             <div className="col-xs-6">
                                                 <h5><span className="glyphicon glyphicon-shopping-cart"/> Shopping
                                                     Cart</h5>
                                             </div>
-                                            <div className="col-xs-6 pad1">
+                                            <div className="col-xs-6 padButton">
                                                 <Link to="/">
-                                                    <button type="button" className=" btn btn-danger btn-sm">
+                                                    <button type="button" className=" btn btn-link btn-sm">
+                                                        <span className="glyphicon glyphicon-chevron-left"></span>
                                                         Continue
                                                         shopping
                                                     </button>
@@ -107,48 +207,84 @@ class Cart extends Component {
                                 </div>
                                 <div className="panel-body">
 
-                                    {this.state.itemList.map((item, idx) => (
-                                    <div className="row mb-5">
-                                        <div className="col-xs-2"><img className="CartImgSize img-responsive"
-                                                                       src={item.url}/>
-                                        </div>
-                                        <div className="col-xs-4 pad2">
-                                            <h6 className="product-name"><strong>{item.name}</strong></h6>
-                                            <h4>
-                                                <small>Product weight: {item.weight} lb</small>
-                                            </h4>
-                                        </div>
-                                        <div className="col-xs-12 pad3">
-                                            <div className="col-xs-12 text-right">
-                                                <h6><strong>$ {item.price}<span className="text-muted"> x </span></strong>
-                                                    <strong>{this.state.qualities[idx]}</strong>
-                                                </h6>
-                                            </div>
+                                    {this.state.itemList.length > 0 &&
+                                    <div>
+                                        <table className="table">
+                                            <thead>
+                                            <tr>
+                                                <th className="text-center"></th>
+                                                <th className="text-center">Weight(lbs)</th>
+                                                <th className="text-center">Unit Price</th>
+                                                <th className="text-center">Qty</th>
+                                                <th className="text-center">Subtotal</th>
+                                                <th>Remove</th>
+                                            </tr>
+                                            </thead>
 
-                                            <div className="col-xs-2">
-                                                <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-xs">
-                                                    <span className="glyphicon glyphicon-trash"> </span>
-                                                </button>
-                                            </div>
+                                            <tbody>
+
+
+                                            {this.state.itemList.map((item, idx) => (
+                                                <tr>
+                                                    <td>
+                                                        <div className="row">
+                                                            <div className="col"><img className="CartImgSize img-responsive"
+                                                                                      src={item.url}/>
+                                                            </div>
+                                                            <div className="col">
+                                                                {item.name}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {item.weight}
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {item.price}
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {this.state.qualities[idx]}
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {(item.price * this.state.qualities[idx]).toFixed(2)}
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-xs">
+                                                                <span className="glyphicon glyphicon-trash"> </span>
+                                                            </button>
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+
+                                            </tbody>
+                                        </table>
+                                    </div>}
+                                    {this.state.itemList.length === 0 &&
+                                    <div className="panel panel-default">
+                                        <div className="panel-body panel-empty text-center">
+                                            <h5>Your shopping cart is empty.</h5>
                                         </div>
                                     </div>
-                                    ))}
+                                    }
 
                                 </div>
                                 <div className="panel-footer">
-                                    <div className="row text-center">
-                                        <div className="col-xs-9">
-                                            <h4 className="text-right">Total <strong>$ {this.state.totalPrice.reduce(function (acc,currentValue) {
-                                                return acc + currentValue;
-                                            }, 0).toFixed(2)}</strong></h4>
+                                    <div className="row">
+                                        <div className="col padTotal">
+                                            <h3 className="text-right">
+                                                Total:    <strong>$ {UserStoreService.getTotalPrice()}</strong></h3>
                                         </div>
-                                        <div className="col-xs-3 pad1">
-                                            <Link to="/checkout">
-                                                <button type="button" className="btn btn-success btn-block">
-                                                    Checkout
-                                                </button>
-                                            </Link>
-                                        </div>
+                                    </div>
+                                    <div className="float-right">
+
+                                        <button type="button" className="btn btn-success"
+                                                onClick={(event) => this.checkAvailable(event,this.props)}>
+                                            <span className="glyphicon glyphicon-share-alt"></span>
+                                            Proceed to Checkout
+                                        </button>
                                     </div>
                                 </div>
                             </div>

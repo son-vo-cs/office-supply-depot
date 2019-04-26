@@ -67,12 +67,13 @@ export default class GoogleMap extends Component{
 
     calculateAndDisplayRoute = (directionsService, directionsDisplay) => {
         var address = this.state.addresses;
+        console.log(address);
         navigator.geolocation.getCurrentPosition(function(position) {
             var new_pos = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
-            var currentLocation = ['Current Location', new_pos];
+            var currentLocation = new_pos;
             address.unshift(currentLocation);
 
 
@@ -82,20 +83,23 @@ export default class GoogleMap extends Component{
                 travelMode: 'DRIVING'
             };
 
+            console.log("before",address);
             // process array of addresses
             for(var i = 0; i < address.length; i++)
             {
-                // set origin, destination, and waypoint array
-                if (i === 0) request.origin = address[i][1];
-                else if (i === address.length - 1) request.destination = address[i][1];
+                // set origin
+                if (i === 0) request.origin = address[i];
+                // set destination
+                else if (i === address.length - 1) request.destination = address[i];
+                // set waypoint addresses
                 else {
                     request.waypoints.push({
-                        location: address[i][1],
+                        location: address[i],
                         stopover: true
                     });
                 }
             }
-
+            console.log("after",request.origin);
 
             directionsService.route(request, function(result, status) {
                 if (status === window.google.maps.DirectionsStatus.OK)

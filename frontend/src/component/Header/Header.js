@@ -13,13 +13,18 @@ import userStoreService from "../../common/services/User/UserStoreService";
 class Header extends Component {
 
 
+    constructor(props) {
+        super(props)
+      //  console.log(userStoreService.getUser(),"lll")
+
+    }
 
     state = {
         userStatus: userStoreService.isLoggedin()? 'User Profile': 'Login',
         nameData: [],
         allData:[],
         open: false,
-        selectedMenu: null,
+        selectedMeun: null,
     };
 
 
@@ -37,10 +42,10 @@ class Header extends Component {
 
     componentDidMount() {
         this.setState({
-            selectedMenu: document.getElementById('all')
+            selectedMeun: document.getElementById('all')
         });
         userService.getAll().then((data) => {
-            userStoreService.setUser(data);
+
             console.log(data);
             this.setState({nameData: data, allData: data});
             console.log(this.state.nameData);
@@ -56,11 +61,13 @@ class Header extends Component {
             this.setState({open: true});
         } else {
             this.props.history.push('/userprofile')
+            console.log(this.props.history,"prop history")
         }
 
     };
 
     handleClose = (login = false) => {
+
         let userStatus = 'Login';
         if (login) {
             userStatus = 'User Profile';
@@ -71,12 +78,12 @@ class Header extends Component {
         });
     };
 
-    menuHandler = (care, element) => {
+    meunHandler = (care, element) => {
         let allData = this.state.allData;
         let nameData =[];
 
-        if (this.state.selectedMenu !== null) {
-            this.state.selectedMenu.className = '';
+        if (this.state.selectedMeun !== null) {
+            this.state.selectedMeun.className = '';
         }
 
         switch (care) {
@@ -139,7 +146,7 @@ class Header extends Component {
 
         element.target.className = 'active';
         this.setState({
-            selectedMenu: element.target,
+            selectedMeun: element.target,
             nameData: nameData
         })
     };
@@ -149,7 +156,7 @@ class Header extends Component {
         return (
             <div>
 
-                <img className="rounded mx-auto d-block logo" src={logo} alt=""/>
+                <img className="rounded mx-auto d-block logo" src={logo}/>
 
                 <Navbar bg="white" variant="light">
                     <Nav className="float-right">
@@ -164,43 +171,43 @@ class Header extends Component {
                     open={this.state.open}
                     onClose={() => this.handleClose(false)}
                 >
-                    <Login closeModal={this.handleClose}/>
+                    <Login closeModal={this.handleClose} parentData={this.props}/>
                 </Modal>
 
 
                 <div className="vertical-menu">
 
                     <a id='all' className='active' onClick={(event) => {
-                        this.menuHandler('all', event)
+                        this.meunHandler('all', event)
                     }}>View All</a>
                     <a onClick={(event) => {
-                        this.menuHandler('ink', event)
+                        this.meunHandler('ink', event)
                     }}>Ink & Toner</a>
                     <a onClick={(event) => {
-                        this.menuHandler('paper', event)
+                        this.meunHandler('paper', event)
                     }}>Paper & Stationery</a>
                     <a onClick={(event) => {
-                        this.menuHandler('office', event)
+                        this.meunHandler('office', event)
                     }}>Office Supplies</a>
                     <a onClick={(event) => {
-                        this.menuHandler('school', event)
+                        this.meunHandler('school', event)
                     }}>School Supplies</a>
                     <a onClick={(event) => {
-                        this.menuHandler('elec', event)
+                        this.meunHandler('elec', event)
                     }}>Electronics</a>
                     <a onClick={(event) => {
-                        this.menuHandler('furn', event)
+                        this.meunHandler('furn', event)
                     }}>Furniture</a>
                     <a onClick={(event) => {
-                        this.menuHandler('clean', event)
-                    }}>Cleaning</a>
+                        this.meunHandler('clean', event)
+                    }}>Cleaning & Facilities</a>
                 </div>
 
                 <div className='cardBox'>
                     {
                         this.state.nameData.map((val, index) => {
                             return (
-                                <Card cardName={val.name} cardUrl={val.url} cardId={index+1} key={index}/>
+                                <Card cardName={val.name} cardUrl={val.url} cardId={val.itemid} key={index}/>
                             )
                         })
                     }

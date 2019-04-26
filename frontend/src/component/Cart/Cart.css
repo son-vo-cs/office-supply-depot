@@ -1,11 +1,11 @@
 .pad{
     padding-left: 350px;
 }
-.padButton{
+.padHeader{
     padding-bottom: 40px;
 }
 .pad1{
-    padding-left: 600px;
+    padding-left: 650px;
 }
 .pad2{
     padding-left: 50px;
@@ -18,10 +18,21 @@
     margin-right: 0px;
 }
 .CartImgSize{
-    width: 140px;
-    height:90px
+    width: 130px;
+    height: 130px;
 }
 
-.total{
-	padding-bottom: 50px;
+.padTotal{
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+.padButton{
+    padding-left: 650px;
+}
+
+.panel-empty {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background:#DCDCDC;
 }

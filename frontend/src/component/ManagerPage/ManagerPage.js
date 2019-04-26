@@ -7,6 +7,8 @@ import AddItem from "./AddItem/AddItem";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
 import logo from "../images/ezgif-1-e382b6df9dbb.png";
+import userService from "../../common/services/User/UserService";
+import UserStoreService from "../../common/services/User/UserStoreService";
 
 class ManagerPage extends Component {
     state = {
@@ -20,7 +22,29 @@ class ManagerPage extends Component {
         column: ['1','2','3'],
         open: false,
         scroll: 'body',
+
+        nameData: [],
+        allData: [],
     };
+
+    componentDidMount() {
+        this.setState({
+            selectedMeun: document.getElementById('all')
+        });
+        userService.getAll().then((data) => {
+
+            console.log(data);
+
+            UserStoreService.setAllItem(data);
+            this.setState({nameData: data, allData: UserStoreService.getAllItem()});
+            console.log(this.state.nameData);
+        }).catch((error) => {
+            alert(error.message);
+        });
+
+        // fetch data from backend and assign all to displayCare
+    }
+
     handleRemoveRow = (idx) => {
 
         let r = this.state.rows[idx]
@@ -50,8 +74,11 @@ class ManagerPage extends Component {
     };
 
     handleClose = () => {
+
         this.setState({open: false});
     };
+
+
     render() {
         return (
             <div>
@@ -61,6 +88,7 @@ class ManagerPage extends Component {
                         <Nav className="float-right">
                             <Nav.Link >Hi, Manager</Nav.Link>
                             <Nav.Link onClick={this.handleOpen('body')}>Add Item</Nav.Link>
+                            <Nav.Link onClick={() => {this.props.history.push('/')}}>Main Page</Nav.Link>
                         </Nav>
                     </Navbar>
                     <Dialog
@@ -72,7 +100,7 @@ class ManagerPage extends Component {
                     >
                         <DialogContent>
 
-                        <AddItem/>
+                        <AddItem closeModal={this.handleClose}/>
                         </DialogContent>
                     </Dialog>
                     <div className="row clearfix">
@@ -90,14 +118,14 @@ class ManagerPage extends Component {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {this.state.rows.map((item, idx) => (
+                                {this.state.allData.map((item, idx) => (
                                     <tr id="addr0" key={idx}>
-                                        <td>{idx}</td>
+                                        <td>{idx+1}</td>
                                         <td>
-                                            {this.state.name[idx]}
+                                            {item.name}
                                         </td>
                                         <td>
-                                            <img className="rounded managerpicsize" src= {this.state.pic[idx]} />
+                                            <img className="rounded managerpicsize" src= {item.url} />
                                         </td>
                                         <td>
                                             <button

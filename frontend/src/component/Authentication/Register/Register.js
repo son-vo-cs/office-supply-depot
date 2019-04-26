@@ -20,7 +20,7 @@ class Register extends React.Component {
     if (body.password === event.target.cPassword.value) {
         userService.userRegister(JSON.stringify(body)).then((data) => {
            // console.log(data);
-
+            console.log(props,"myprops")
             alert('Register Succeed')
             props.history.push('/')
         }).catch((error) => {

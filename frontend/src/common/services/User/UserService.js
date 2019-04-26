@@ -59,7 +59,7 @@ class UserService {
         });
     }
     getShipAddress(postBody) {
-        let url = this.endpoint + '/getItem';
+        let url = this.endpoint + '/getShipAddress';
         return fetch(url, {
             method: 'POST',
             body: postBody,
@@ -67,7 +67,99 @@ class UserService {
                 'Content-Type': 'application/json'
             }
         }).then((resp) => {
-            console.log(resp)
+            if (!resp.ok) {
+                throw Error('Please Log in');
+            }
+            return resp.json();
+        });
+    }
+    markDelivered(postBody) {
+        let url = this.endpoint + '/markDelivered';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Sorry, update status failed');
+            }
+            return resp.json();
+        });
+    }
+    checkAvailable(postBody) {
+        let url = this.endpoint + '/checkAvailable';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Sorry, some items are Out Of Stock/Please Log in');
+            }
+            return resp.json();
+        });
+    }
+    getOrderHistory(postBody) {
+        let url = this.endpoint + '/getOrderHistory';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Cannot get order history');
+            }
+            return resp.json();
+        });
+    }
+    getOrderHistoryDetail(postBody) {
+        let url = this.endpoint + '/getOrderHistoryDetail';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Cannot get order history');
+            }
+            return resp.json();
+        });
+    }
+    submitOrder(postBody) {
+    let url = this.endpoint + '/submitOrder';
+    return fetch(url, {
+        method: 'POST',
+        body: postBody,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then((resp) => {
+        if (!resp.ok) {
+            throw Error('Cannot get orders');
+        }
+        return resp.json();
+        });
+    }
+    addItem(postBody) {
+        let url = this.endpoint + '/addItem';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Cannot Add Item/Please Login');
+            }
             return resp.json();
         });
     }

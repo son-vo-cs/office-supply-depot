@@ -1,20 +1,167 @@
 import React, {Component} from 'react';
 import "./Checkout.scss"
 import Form from "react-bootstrap/Form";
-import userStoreService from './../../common/services/User/UserStoreService';
+import userService from "../../common/services/User/UserService";
+import UserStoreService from "../../common/services/User/UserStoreService";
 
 class Checkout extends Component {
     state = {
-        shippingDisable: false
+        submitDeliveryMethod: false,
+        shippingDisable: false,
+        shippingMethodDisable: false,
+        over: UserStoreService.isOver(),
+        under: UserStoreService.isUnder(),
+        firstName: "",
+        lastName: "",
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+        phone: "",
+        pickup: null,
+        renew: [],
+        priority: null,
+        showShippingMethodStep: false,
+        showPaymentStep: false
     };
 
-    shippingAddressSubmit = (event) => {
-        this.setState({
-            shippingDisable: true
-        });
-        console.log(userStoreService.getUser())
-        event.preventDefault();
+
+    componentDidMount(){
+        let today = new Date().toLocaleDateString();
+
+        console.log(today,"today")
+    }
+
+        shippingAddressSubmit = (event) => {
+
+            this.setState({
+                showShippingMethodStep: true,
+                shippingDisable: true,
+                firstName: event.target.fname.value,
+                lastName: event.target.lname.value,
+                address: event.target.address.value,
+                city: event.target.city.value,
+                state: event.target.state.value,
+                zip: event.target.zipcode.value,
+                phone: event.target.phone.value,
+            });
+            event.preventDefault();
+
+
+
     };
+
+    orderSubmit = (event) => {
+
+        // console.log(this.state.pickup, "pickup")
+        // console.log(UserStoreService.getTotalPrice(), "old total price")
+        // if(this.state.pickup === true){
+        //     UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 20);
+        //
+        //     console.log(UserStoreService.getTotalPrice(), "new total price")
+        // }
+
+        let body = {
+            authorization: UserStoreService.getToken(),
+            userid: UserStoreService.getUserId(),
+            firstname: this.state.firstName,
+            lastname: this.state.lastName,
+            address: this.state.address,
+            city: this.state.city,
+            state: this.state.state,
+            zip: this.state.zip,
+            phone: this.state.phone,
+            totalprice: UserStoreService.getTotalPrice(),
+            itemids: UserStoreService.getItemId(),
+            quantities: UserStoreService.getQuantities(),
+            priority: this.state.priority,
+            warehousenums: UserStoreService.getWareHouseId(),
+            timestamp: new Date().toLocaleDateString(),
+        };
+
+    //    console.log(body,"orderSubmit body")
+        userService.submitOrder(JSON.stringify(body)).then((data) => {
+            console.log(data);
+
+            alert('Order Submitted');
+            this.props.history.push('/')
+            UserStoreService.setShoppingCart(this.state.renew);
+        }).catch((error) => {
+            alert(error.message);
+        });
+        console.log(this.state.firstName,"fname")
+
+
+    };
+
+    submitDelivery =() =>{
+        if(this.state.pickup === null)
+        {
+            this.setState({showPaymentStep: false});
+        }
+        else
+            this.setState({shippingMethodDisable: true, submitDeliveryMethod: true, showPaymentStep: true});
+        if(this.state.pickup === "1")
+        {
+            if(UserStoreService.getTotalWeight() >= 15)
+            {
+                this.setState({
+                    priority: 2
+                })
+            }
+            else{
+                this.setState({
+                    priority: 0
+                })
+            }
+        }
+        if(this.state.pickup === "2")
+        {
+
+            UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 25);
+            this.setState({
+                priority: 3
+            })
+
+        }
+        if(this.state.pickup === "3")
+        {
+            this.setState({
+                priority: 1
+            })
+
+        }
+
+        if(this.state.pickup === "4")
+        {
+            UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 25);
+            if(UserStoreService.getTotalWeight() >= 15)
+            {
+                this.setState({
+                    priority: 2
+                })
+            }
+            else{
+                this.setState({
+                    priority: 0
+                })
+            }
+
+        }
+
+
+        console.log(this.state.pickup)
+
+
+    };
+
+    pickup =() =>{
+
+        this.setState()
+
+    };
+
+
 
     render() {
         return (
@@ -23,7 +170,7 @@ class Checkout extends Component {
                     <h1 className="m-t-0 header-title"><b>Check out</b></h1>
 
                     <div className="card-box">
-                        <h4 className="m-t-0 header-title"><b>Shipping Address</b></h4>
+                        <h4 className="m-t-0 header-title"><b>Shipping Information</b></h4>
                         <p className="text-muted m-b-30 font-13">
                             Check out Info
                         </p>
@@ -40,18 +187,28 @@ class Checkout extends Component {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="address">Address<span className="text-danger">*</span></label>
-                                <input type="text"  placeholder="Address" required disabled={this.state.shippingDisable}
+                                <input type="text"  name="address" placeholder="Address" required disabled={this.state.shippingDisable}
                                        className="form-control"  />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="city">City<span className="text-danger">*</span></label>
-                                <input type="text" required disabled={this.state.shippingDisable}
+                                <input type="text" name="city" required disabled={this.state.shippingDisable}
                                        placeholder="City" className="form-control"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="state">State<span className="text-danger">*</span></label>
+                                <input type="text" required disabled={this.state.shippingDisable}
+                                       placeholder="State" name="state" className="form-control"/>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="zipcode">Zip Code<span className="text-danger">*</span></label>
                                 <input type="text" required disabled={this.state.shippingDisable}
-                                       placeholder="Zip Code" className="form-control"/>
+                                       placeholder="Zip Code" name="zipcode" className="form-control"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="phonenumber">Phone Number<span className="text-danger">*</span></label>
+                                <input type="number" required
+                                       placeholder="Phone Number" name="phone" className="form-control"/>
                             </div>
 
 
@@ -64,67 +221,125 @@ class Checkout extends Component {
                         </form>
 
                     </div>
+                    {this.state.showShippingMethodStep &&
                     <div className="card-box">
                         <h4 className="m-t-0 header-title"><b>Shipping method</b></h4>
 
                         <p className="text-muted m-b-30 font-13">
-                           shipping Info
+                           shipping Information
                         </p>
 
                         <table className="table table-responsive">
 
+                            {this.state.over &&
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <div className="radio">
+                                            <label><input type="radio" id='express' name="optradio"
+                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
+                                                Everyday Free Shipping
+                                                Transit time: 2 business days
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="radiotext">
+                                            <label htmlFor='free'>
+                                                <font color="red">FREE
+                                                </font>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div className="radio">
+                                            <label><input type="radio" id='regular' name="optradio"
+                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "2"})}}/>
+                                                Premium Shipping
+                                                Transit time: 1 business day
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="radiotext">
+                                            <label htmlFor='premium'>$25.00</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div className="radio">
+                                            <label><input type="radio" id='express' name="optradio"
+                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"});console.log("asdad")
+                                                          }}/>
+                                                Pick up in our Warehouse
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="radiotext">
+                                            <label htmlFor='express'>
+                                                <font color="red">FREE</font></label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+
+
+
+                            }
+
+                            {this.state.under &&
                             <tbody>
+
                             <tr>
                                 <td>
                                     <div className="radio">
-                                        <label><input type="radio" id='express' name="optradio" className="checkoutMargin"/>
-                                            Everyday Free Shipping
-                                            Transit time: 3-6 business days
+                                        <label><input type="radio" id='regular' name="optradio"
+                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "4"})}}/>
+                                            Standard Shipping
+                                            Transit time: 2 business day
                                         </label>
                                     </div>
                                 </td>
                                 <td>
                                     <div className="radiotext">
-                                        <label htmlFor='free'>
-                                            <font color="red">FREE
-                                            </font>
-                                        </label>
+                                        <label htmlFor='premium'>$20.00</label>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div className="radio">
-                                        <label><input type="radio" id='regular' name="optradio" className="checkoutMargin"/>
-                                            Premium Shipping
-                                            Transit time: 2-3 business days
+                                        <label><input type="radio" id='express' name="optradio"
+                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
+                                            Pick up in our Warehouse
                                         </label>
                                     </div>
                                 </td>
                                 <td>
                                     <div className="radiotext">
-                                        <label htmlFor='premium'>$12.00</label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="radio">
-                                        <label><input type="radio" id='express' name="optradio" className="checkoutMargin" />
-                                            Express Shipping
-                                            Transit time: 1-2 business days
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="radiotext">
-                                        <label htmlFor='express'>$22.00</label>
+                                        <label htmlFor='express'>
+                                            <font color="red">FREE</font></label>
                                     </div>
                                 </td>
                             </tr>
                             </tbody>
+                            }
+                            <div className="form-group text-right m-b-0">
+                                <button onClick={(event) => this.submitDelivery(event)} className="btn btn-danger" type="submit">
+                                    Continue
+                                </button>
+
+                            </div>
+
                         </table>
-                    </div>
+                    </div>}
+
+
+                    {this.state.showPaymentStep &&
                     <div className="card-box">
                         <h4 className="m-t-0 header-title"><b>Payment</b></h4>
 
@@ -134,14 +349,14 @@ class Checkout extends Component {
 
                         <div className="form-group">
                             <label htmlFor="cardtype">Card Type<span className="text-danger">*</span></label>
-                        <Form>
-                            <Form.Control as="select">
-                                <option>Visa</option>
-                                <option>MasterCard</option>
-                                <option>American Express</option>
-                                <option>Discovery</option>
-                            </Form.Control>
-                        </Form>
+                            <Form>
+                                <Form.Control as="select">
+                                    <option>Visa</option>
+                                    <option>MasterCard</option>
+                                    <option>American Express</option>
+                                    <option>Discovery</option>
+                                </Form.Control>
+                            </Form>
                         </div>
 
                         <div className="form-group">
@@ -188,43 +403,28 @@ class Checkout extends Component {
                                 </Form>
                             </div>
                         </div>
-                            <div className="form-group">
-                                <label htmlFor="security">Security Number<span className="text-danger">*</span></label>
-                                <input type="number" required
-                                       placeholder="Security Number" className="form-control"/>
-                            </div>
-                        <div className="form-group text-right m-b-0">
-                            <button className="btn btn-danger" type="submit">
-                                Continue
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div className="card-box">
-                        <h4 className="m-t-0 header-title"><b>Contact Info</b></h4>
-
-                        <p className="text-muted m-b-30 font-13">
-                            Contact Info
-                        </p>
                         <div className="form-group">
-                            <label htmlFor="phonenumber">Phone Number<span className="text-danger">*</span></label>
+                            <label htmlFor="security">Security Number<span className="text-danger">*</span></label>
                             <input type="number" required
-                                   placeholder="Phone Number" className="form-control"/>
+                                   placeholder="Security Number" className="form-control"/>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="email">Email Address<span className="text-danger">*</span></label>
-                            <input type="email" required
-                                   placeholder="Email Address" className="form-control"/>
-                        </div>
+
+                        {this.state.submitDeliveryMethod &&
+                        <h4 className="m-t-0 header-title"><b>Total Price: ${UserStoreService.getTotalPrice()}</b>
+                        </h4>
+                        }
+
                         <div className="form-group text-right m-b-0">
-                            <button className="btn btn-danger" type="submit">
+                            <button onClick={(event) => this.orderSubmit(event)} className="btn btn-danger"
+                                    type="submit">
                                 Place Order
                             </button>
 
                         </div>
+
+
                     </div>
+                    }
 
                         </div>
                     </div>
