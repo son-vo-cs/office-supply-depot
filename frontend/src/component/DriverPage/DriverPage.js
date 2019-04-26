@@ -33,7 +33,7 @@ class DriverPage extends Component {
 
             console.log(data,"data");
             for (let i = 0; i < data.length; i++){
-                address = data[i].shipaddress;
+                address = data[i].shipadd;
                 addresses.push(address);
                 driverOrderId = data[i].orderid;
                 driverOrderIds.push(driverOrderId)
@@ -49,10 +49,21 @@ class DriverPage extends Component {
 
 
 
-clickHandler = () =>{
+clickHandler = (event,props) =>{
+    event.preventDefault();
+        if(this.state.driverOrderIds[0] === undefined)
+        {
+            alert("Sorry, we don't have orders need to be delivered")
+            this.setState({start: true, clicked: false})
+            props.history.push('/')
 
-        this.setState({start: false, clicked: true})
+        }
+
+        else {
+            this.setState({start: false, clicked: true})
+        }
     };
+
 
     deliverySubmit = (event,props) => {
         event.preventDefault();
@@ -61,17 +72,18 @@ clickHandler = () =>{
             orderids: this.state.driverOrderIds,
         };
 
-        userService.markDelivered(JSON.stringify(body)).then((data) => {
+        if(this.state.driverOrderIds[0] !== undefined) {
+            userService.markDelivered(JSON.stringify(body)).then((data) => {
 
-            console.log(data,"data");
-            alert("Thanks for your delivery");
-            props.history.push('/')
+                console.log(data, "data");
+                alert("Thanks for your delivery");
+                props.history.push('/')
 
-        }).catch((error) => {
-            alert(error.message);
-        });
+            }).catch((error) => {
+                alert(error.message);
+            });
 
-
+        }
     };
 
     render() {
@@ -86,7 +98,7 @@ clickHandler = () =>{
                 </Navbar>
                 <div className="Dbutton" id="start">
                     {this.state.start &&
-                    <button onClick={this.clickHandler} className="btn btn-danger">
+                    <button onClick={(event) => this.clickHandler(event,this.props)} className="btn btn-danger">
                         Start Delivery
                     </button>}
                     {this.state.clicked &&

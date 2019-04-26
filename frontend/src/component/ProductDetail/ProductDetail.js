@@ -20,18 +20,24 @@ class ProductDetail extends Component {
 
         };
 
+        let quality = null;
         console.log(body);
         userService.getItem(JSON.stringify(body)).then((data) => {
 
+
             console.log(data);
             this.setState({itemData: data});
+            quality = data.quantity;
+            if (quality > 0)
+            {
+                this.setState({status: "In Stock"});
+            }
+
         }).catch((error) => {
             alert(error.message);
         });
-        if (this.state.itemData.quality > 0)
-        {
-            this.setState({status: "In Stock"});
-        }
+
+
     }
 
     addToShoppingcart = (event,itemid) => {
@@ -72,7 +78,7 @@ class ProductDetail extends Component {
                                 <hr/>
                                     <div className="product-price">$ {this.state.itemData.price}</div>
 
-                                    <div className="product-stock">In Stock</div>
+                                    <div className="product-stock">{this.state.status}</div>
                                     <hr/>
                                         <div className="btn-group cart">
                                             <button type="button" className="btn btn-success" onClick={(event)=> this.addToShoppingcart(event,this.state.itemData.itemid)}>

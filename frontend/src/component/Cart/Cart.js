@@ -9,7 +9,7 @@ class Cart extends Component {
     state = {
         rows: UserStoreService.getShoppingCart(),
         itemId:[...new Set(UserStoreService.getShoppingCart())],
-        qualities: [],
+        qualities: undefined,
         itemList: [],
         totalPrice: [],
         totalWeight: [],
@@ -26,6 +26,7 @@ class Cart extends Component {
 
         let list = [];
         let quality = [];
+    //    console.log(quality[0],"quality")
         let price = [];
         let tPrice = 0;
         let totalP = 0;
@@ -58,6 +59,7 @@ class Cart extends Component {
                     return acc + currentValue;
                 }, 0).toFixed(2));
 
+                console.log(UserStoreService.getTotalPrice(), "fdjhgsdokjfkhbklk")
                 // Set Total Weight
                 tWeight =+ data.weight * this.state.qualities[i];
                 weight.push(tWeight);
@@ -135,6 +137,7 @@ class Cart extends Component {
         console.log(l,"itemId list");
         console.log(longList,"item long list");
         console.log(this.state.itemList,"item list");
+        UserStoreService.setItemId(l);
         UserStoreService.setShoppingCart(longList);
         UserStoreService.setQuantities(q);
         UserStoreService.setTotalPrice((UserStoreService.getTotalPrice() - r.price * deletequalities).toFixed(2));
@@ -143,6 +146,8 @@ class Cart extends Component {
     };
 
     checkAvailable = (event,props) => {
+
+
         UserStoreService.setQuantities(this.state.qualities);
         event.preventDefault();
         let body = {
@@ -150,15 +155,17 @@ class Cart extends Component {
             itemids: this.state.itemId,
             quantities: this.state.qualities,
         };
-        userService.checkAvailable(JSON.stringify(body)).then((data) => {
-             console.log(data);
+        console.log(this.state.qualities,"quality")
+        if(this.state.qualities[0] !== undefined) {
+            userService.checkAvailable(JSON.stringify(body)).then((data) => {
+                console.log(data);
 
-            alert(data);
-            props.history.push('/checkout')
-        }).catch((error) => {
-            alert(error.message);
-        });
-
+                alert(data);
+                props.history.push('/checkout')
+            }).catch((error) => {
+                alert(error.message);
+            });
+        }
 
 
     };

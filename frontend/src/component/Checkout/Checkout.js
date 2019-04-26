@@ -86,6 +86,7 @@ class Checkout extends Component {
             alert('Order Submitted');
             this.props.history.push('/')
             UserStoreService.setShoppingCart(this.state.renew);
+            UserStoreService.setTotalPrice(null);
         }).catch((error) => {
             alert(error.message);
         });
@@ -106,7 +107,7 @@ class Checkout extends Component {
             if(UserStoreService.getTotalWeight() >= 15)
             {
                 this.setState({
-                    priority: 2
+                    priority: 3
                 })
             }
             else{
@@ -120,7 +121,7 @@ class Checkout extends Component {
 
             UserStoreService.setTotalPrice(parseFloat(UserStoreService.getTotalPrice()) + 25);
             this.setState({
-                priority: 3
+                priority: 2
             })
 
         }
@@ -138,7 +139,7 @@ class Checkout extends Component {
             if(UserStoreService.getTotalWeight() >= 15)
             {
                 this.setState({
-                    priority: 2
+                    priority: 3
                 })
             }
             else{

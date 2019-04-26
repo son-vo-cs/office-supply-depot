@@ -18,16 +18,34 @@ const AddItem = (props) => {
             url: event.target.itemPicture.value
         };
 
-        let newItem = [{"name" : event.target.itemName.value, "url" : event.target.itemPicture.value}];
-        UserStoreService.addAllItem(newItem);
+
+        let all = UserStoreService.getAllItem()[UserStoreService.getAllItem().length - 1].itemid;
+        let itemNames = [];
+        let itemName = "";
+        for(let i =0; i < UserStoreService.getAllItem().length; i++){
+            itemName = UserStoreService.getAllItem()[i].name;
+            itemNames.push(itemName);
+        }
+
+        if( !itemNames.includes(event.target.itemName.value) )
+        {
+            let newItem = {"name" : event.target.itemName.value, "url" : event.target.itemPicture.value, "itemid" : all+1};
+            console.log(all,"show the last one Id");
+            UserStoreService.addAllItem(newItem);
+        }
+
+
+        console.log(UserStoreService.getAllItem(), "all item");
 
         userService.addItem(JSON.stringify(body)).then((data) => {
              console.log(data);
 
-            alert('Add Item Successfully!');
+            alert('Add/Update Item Successfully!');
 
             props.closeModal();
-       //     props.history.push('/manager')
+
+          //  this.props.history.push('/manager')
+
         }).catch((error) => {
            alert(error.message);
         });

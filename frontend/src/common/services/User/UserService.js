@@ -163,6 +163,21 @@ class UserService {
             return resp.json();
         });
     }
+    deleteItem(postBody) {
+        let url = this.endpoint + '/deleteItem';
+        return fetch(url, {
+            method: 'POST',
+            body: postBody,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((resp) => {
+            if (!resp.ok) {
+                throw Error('Cannot Delete Item/Please Login');
+            }
+            return resp.json();
+        });
+    }
 
 }
 

@@ -162,6 +162,9 @@ class Header extends Component {
                     <Nav className="float-right">
                         <Nav.Link onClick={this.handleOpen}>{this.state.userStatus}</Nav.Link>
                         <Nav.Link onClick={() => {this.props.history.push('/cart')}}>Shopping Cart</Nav.Link>
+                        {(this.state.userStatus === "User Profile") &&
+                        <Nav.Link href="/">Log out</Nav.Link>}
+
 
                     </Nav>
                 </Navbar>

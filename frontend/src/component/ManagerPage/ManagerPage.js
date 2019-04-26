@@ -12,22 +12,21 @@ import UserStoreService from "../../common/services/User/UserStoreService";
 
 class ManagerPage extends Component {
     state = {
-        rows: ['0','1','2'],
-        name: ['Boise POLARIS® Premium Multipurpose Paper, Letter Paper Size, FSC® Certified, White, 500 Sheets Per Ream, Case Of 10 Reams',
-            'Realspace® Magellan Performance Collection L-Shaped Desk, Espresso Realspace® Magellan Performance Collection L-Shaped Desk, Espresso',
-            'Lenovo® IdeaPad™ 530S Laptop, 14" Screen, AMD Ryzen™ 5, 8GB Memory, 256GB Solid State Drive, Windows® 10 Home'],
-        pic: ['https://officedepot.scene7.com/is/image/officedepot/196697_p_boise_polaris_premium_multipurpose_paper?$OD-Med$',
-            'https://officedepot.scene7.com/is/image/officedepot/956652_p_realspace_magellan_performance_collection_l_desk?$OD-Med$',
-            'https://officedepot.scene7.com/is/image/officedepot/2553990_o01_lenovo_ideapad_530s_laptop?$OD-Med$'],
-        column: ['1','2','3'],
+
         open: false,
         scroll: 'body',
 
         nameData: [],
         allData: [],
+        itemIds: [],
+
+
     };
 
     componentDidMount() {
+
+        let itemIds = [];
+        let itemId = null;
         this.setState({
             selectedMeun: document.getElementById('all')
         });
@@ -35,8 +34,18 @@ class ManagerPage extends Component {
 
             console.log(data);
 
+            for(let i = 0; i < data.length; i++)
+            {
+                itemId = data[i].itemid;
+                itemIds.push(itemId);
+            }
+            UserStoreService.setItemId(itemIds);
             UserStoreService.setAllItem(data);
-            this.setState({nameData: data, allData: UserStoreService.getAllItem()});
+            console.log(UserStoreService.getAllItem(),"all new item");
+
+
+            this.setState({nameData: data, allData: UserStoreService.getAllItem(), itemIds: itemIds});
+            console.log(this.state.allData, "ComponentDidmMount allData");
             console.log(this.state.nameData);
         }).catch((error) => {
             alert(error.message);
@@ -46,28 +55,46 @@ class ManagerPage extends Component {
     }
 
     handleRemoveRow = (idx) => {
+        if(UserStoreService.getToken() !== undefined) {
 
-        let r = this.state.rows[idx]
-        let p = this.state.pic[idx];
-        let n = this.state.name[idx];
-        this.setState({
-            rows: this.state.rows.filter(function (row) {
-                return row !== r;
-            }),
-            pic: this.state.pic.filter(function (pic) {
-                return pic !== p;
-            }),
-            name: this.state.name.filter(function (name) {
-                return name !== n;
-            }),
-        });
+            let datas = this.state.allData[idx];
+            // console.log(UserStoreService.getAllItem(), "all Item list");
+            // console.log(this.state.itemIds,"order item ids");
+            // console.log(UserStoreService.getAllItem()[idx].itemid,"current delete item ids");
+            let item = UserStoreService.getAllItem()[idx].itemid;
 
-        console.log(this.state.rows.filter(function (row) {
-            return row !== r;
-        }))
-        console.log(this.state.pic.filter(function (pic) {
-            return pic !== p;
-        }))
+            let body = {
+                authorization: UserStoreService.getToken(),
+                itemid: item,
+            };
+
+            userService.deleteItem(JSON.stringify(body)).then((data) => {
+
+                console.log(data);
+                alert("Delete Item Successfully!");
+                this.setState({
+                    allData: this.state.allData.filter(function (row) {
+                        return row !== datas;
+                    }),
+                    itemIds: this.state.itemIds.filter(function (row) {
+                        return row !== item;
+                    }),
+                });
+
+                console.log(this.state.allData, "handleRemoveRow allData");
+                // UserStoreService.setAllItem(this.state.allData);
+                UserStoreService.setItemId(this.state.itemIds);
+                UserStoreService.setAllItem(this.state.allData);
+            }).catch((error) => {
+                alert(error.message);
+            });
+
+
+        }
+        else{
+            alert("Please Sign in")
+        }
+
     };
     handleOpen = scroll => () => {
         this.setState({open: true, scroll});
@@ -120,7 +147,7 @@ class ManagerPage extends Component {
                                 <tbody>
                                 {this.state.allData.map((item, idx) => (
                                     <tr id="addr0" key={idx}>
-                                        <td>{idx+1}</td>
+                                        <td>{item.itemid}</td>
                                         <td>
                                             {item.name}
                                         </td>
@@ -129,7 +156,7 @@ class ManagerPage extends Component {
                                         </td>
                                         <td>
                                             <button
-                                                onClick={() => this.handleRemoveRow(idx)}
+                                                onClick={() => {this.handleRemoveRow(idx); console.log(this.state.allData, "asdad")}}
                                                 className="pull-right btn btn-danger"
                                             >
                                                 Delete Row
