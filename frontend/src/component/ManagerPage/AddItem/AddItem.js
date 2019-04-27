@@ -63,7 +63,7 @@ const AddItem = (props) => {
                 <h1>Add Item</h1>
                 <form onSubmit={(event) => handleSubmit(event)}>
                     <div className="form-group">
-                        <label htmlFor="fisrtName">Item ID<span className="text-danger">*</span></label>
+                        <label htmlFor="firstName">Item ID<span className="text-danger">*</span></label>
                         <input type="number" name="itemId" required
                                placeholder="Enter Item Id" className="form-control" id="itemId"/>
                     </div>
