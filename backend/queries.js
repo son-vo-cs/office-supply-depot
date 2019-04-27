@@ -1,6 +1,34 @@
 const sqlite = require('sqlite3').verbose();
 const jwtauth = require('./auth/jwtauth');
 
+'use strict';
+var crypto = require('crypto');
+
+var genRandomString = function(length){
+	return crypto.randomBytes(Math.ceil(length/2))
+		.toString('hex')
+		.slice(0,length);
+};
+
+
+var sha256 = function(password, salt){
+	var hash = crypto.createHmac('sha256', salt);
+	hash.update(password);
+	var value = hash.digest('hex');
+	return {
+		salt:salt,
+		passwordHash:value
+	};
+};
+
+function saltHashPassword(userpassword,salt) {
+	if (salt.length < 1)
+		salt = genRandomString(16);
+	var passwordData = sha256(userpassword, salt);
+	return passwordData;
+}
+
+
 
 
 
@@ -78,7 +106,10 @@ function getpair2(orderid, itemids, warehousenums, quantities, priority)
 }
 
 const registerUser = (request, response) => {
-	const {firstname, lastname, email, password} = request.body;
+	var {firstname, lastname, email, password} = request.body;
+	var hashPass = saltHashPassword(password,"");
+	password = hashPass.passwordHash;
+	var salt = hashPass.salt;
 	var userId = 1;
 
 
@@ -86,7 +117,7 @@ const registerUser = (request, response) => {
 		(result)=>{
 			if (result === undefined)
 			{
-				setDatabase('INSERT INTO users (email, password) VALUES (?, ?)', [email, password],(t)=>{
+				setDatabase('INSERT INTO users (email, password,salt) VALUES (?, ?,?)', [email, password,salt],(t)=>{
 					getDatabase('SELECT userid FROM users WHERE email = $1', [email],
 						(result1)=> {
 							if (result1 === undefined)
@@ -116,8 +147,8 @@ const registerUser = (request, response) => {
 
 
 const loginUser = (request, response) => {
-	const {email, password} = request.body;
-	getDatabase('SELECT * FROM users WHERE email = $1 AND password = $2', [email, password],
+	var {email, password} = request.body;
+	getDatabase('SELECT * FROM users WHERE email = $1', [email],
 		(result)=>{
 			if (result === undefined)
 			{
@@ -125,15 +156,26 @@ const loginUser = (request, response) => {
 			}
 			else
 			{
-				let token = jwtauth.generate({email: email});
-				getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
-					var userId = t.userid;
-					getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
-					{
-						response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "email": result.email, "token": token});
-					})
+				var salt = result.salt;
+				var passHash = saltHashPassword(password,salt).passwordHash;
+				var actualPass = result.password;
+				console.log(actualPass);
+				console.log(passHash);
+				if (passHash === actualPass)
+				{
+					let token = jwtauth.generate({email: email});
+					getDatabase('SELECT userid FROM users WHERE email = $1', [email], (t)=>{
+						var userId = t.userid;
+						getDatabase('SELECT firstname FROM customers WHERE userid = $1', [userId], (result1)=>
+						{
+							response.status(200).json({"userid": userId, "firstname" : result1.firstname, "level": result.level, "email": result.email, "token": token});
+						})
 
-				});
+					});
+				}
+				else {
+					response.status(404).json("Invalid email / password combination");
+				}
 			}
 		});
 }
@@ -259,8 +301,32 @@ const checkAvailable = (request, response) =>{
 
 
 
+function getWarehouseId(ids)
+{
+	var one = 0;
+	var two = 0;
+	for (var i = 0; i < ids.length; i++)
+	{
+		if (ids[i] === 1)
+		{
+			one++;
+		}
+		if (ids[i] === 2)
+		{
+			two++;
+		}
+	}
+	if (one > 0 && two > 0)
+		return 3;
+	if (one > 0 && two < 1)
+		return 1;
+	if (one < 1 && two > 0)
+		return 2;
+}
+
 const submitOrder = (request, response) => {
 	const {userid, firstname, lastname, address, city, state, zip, phone, totalprice, itemids, quantities, priority, warehousenums, timestamp} = request.body;
+	var warehouseid = getWarehouseId(warehousenums);
 	var shipaddress = address + ", " + city + ", " + state + " " + zip;
 	var pair = getpair(itemids, quantities);
 	var qr = "WITH Tmp(id,quantity) AS (VALUES" + pair + ") UPDATE items SET quantity = quantity - ";
@@ -271,8 +337,8 @@ const submitOrder = (request, response) => {
 
 	setDatabase(qr, [],
 		(result) => {
-			setDatabase("INSERT INTO orders (userid, shipadd, phone, totalprice, orderdate, status, priority) VALUES (?,?,?,?,?,?,?)",
-				[userid,shipaddress, phone, totalprice, timestamp, "processing",priority], (t)=>{
+			setDatabase("INSERT INTO orders (userid, shipadd, phone, totalprice, orderdate, status, priority, warehouseid) VALUES (?,?,?,?,?,?,?,?)",
+				[userid,shipaddress, phone, totalprice, timestamp, "processing",priority,warehouseid], (t)=>{
 					getDatabase("SELECT orderid FROM orders WHERE userid = " + userid, "",(t1)=>{
 						if (t1 === undefined)
 						{
@@ -370,7 +436,7 @@ function getDifferentDate(date)
 
 const getShipAddress = (request, response) =>
 {
-	getDatabase("SELECT orderid, shipadd, priority, orderdate FROM orders WHERE status= " + "'processing'", "",
+	getDatabase("SELECT orderid, shipadd, priority, orderdate, warehouseid FROM orders WHERE status= " + "'processing'", "",
 		(result)=>{
 			if (result === undefined)
 			{
@@ -379,12 +445,27 @@ const getShipAddress = (request, response) =>
 			else
 			{
 				var day_2 = [];
+				var one = 0;
+				var two = 0;
+				var three = 0;
 				for (var i = 0; i < result.length; i++)
 				{
 					if (result[i].priority === 2)
 					{
 						delete result[i].priority;
 						delete result[i].orderdate;
+						if (result[i].warehouseid === 1)
+						{
+							one++;
+						}
+						else if (result[i].warehouseid === 2)
+						{
+							two++;
+						}
+						else if (result[i].warehouseid === 3)
+						{
+							three++;
+						}
 						day_2.push(result[i]);
 					}
 					else if (result[i].priority > 2)
@@ -393,9 +474,38 @@ const getShipAddress = (request, response) =>
 						{
 							delete result[i].priority;
 							delete result[i].orderdate;
+							if (result[i].warehouseid === 1)
+							{
+								one++;
+							}
+							else if (result[i].warehouseid === 2)
+							{
+								two++;
+							}
+							else if (result[i].warehouseid === 3)
+							{
+								three++;
+							}
 							day_2.push(result[i]);
 						}
 					}
+				}
+				var idfinal = 2;
+				if (three > 0)
+				{
+					idfinal = 3;
+				}
+				else if (one > 0 && two > 0)
+				{
+					idfinal = 3;
+				}
+				else if (one > 0 && two < 1)
+				{
+					idfinal = 1;
+				}
+				for (var i = 0; i < day_2.length; i++)
+				{
+					day_2[i].warehouseid = idfinal;
 				}
 				response.status(200).json(day_2);
 			}

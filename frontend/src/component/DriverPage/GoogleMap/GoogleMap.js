@@ -7,6 +7,9 @@ export default class GoogleMap extends Component{
     state = {
         center: { lat: 37.335141, lng: -121.881093 },
         addresses: this.props.addresses,
+        warehouse: null,
+        warehouse1: "1 Washington Sq, San Jose, CA 95192",
+        warehouse2: "500 El Camino Real, Santa Clara, CA 95053"
 
     };
 
@@ -67,6 +70,7 @@ export default class GoogleMap extends Component{
 
     calculateAndDisplayRoute = (directionsService, directionsDisplay) => {
         var address = this.state.addresses;
+        var ware = this.state.warehouse;
         console.log(address);
         navigator.geolocation.getCurrentPosition(function(position) {
             var new_pos = {
@@ -76,18 +80,32 @@ export default class GoogleMap extends Component{
             var currentLocation = new_pos;
             address.unshift(currentLocation);
 
-
             const request = {
                 waypoints: [],
                 optimizeWaypoints: true,
                 travelMode: 'DRIVING'
             };
 
-            console.log("before",address);
+
+            // Assume warehouse only contain: warehouse1 or warehouse2 
+
+            if(ware == 1)  // stop by warehouse 1
+            {
+                request.origin = this.state.warehouse1;
+                request.destination = this.state.warehouse1;
+            }
+            else if(ware == 2) // stop by warehouse 2
+            {
+                request.destination = this.state.warehouse2;
+                request.destination = this.state.warehouse2;
+            }
+           
+            /*
+            console.log("passed addresses",address);
             // process array of addresses
             for(var i = 0; i < address.length; i++)
             {
-                // set origin
+                // set origin = current location
                 if (i === 0) request.origin = address[i];
                 // set destination
                 else if (i === address.length - 1) request.destination = address[i];
@@ -99,18 +117,39 @@ export default class GoogleMap extends Component{
                     });
                 }
             }
-            console.log("after",request.origin);
+            console.log("waypoints",request.origin);
+            */
 
+
+            console.log("passed addresses",address);
+            for(var i = 0; i < address.length; i++)
+            {
+                request.waypoints.push({
+                location: address[i],
+                stopover: true
+                });
+            }
+            console.log("waypoints",request);
+
+            var a = [];
+
+            // takes request.waypoints[origin ... destination] returns result.routes[0].waypoint_order[...]
             directionsService.route(request, function(result, status) {
                 if (status === window.google.maps.DirectionsStatus.OK)
                 {
-                    directionsDisplay.setDirections(result);
+                    a = result.routes[0].waypoint_order;
+                    console.log(a);
+                    //directionsDisplay.setDirections(result);
                 }
                 else
                 {
                     window.alert('Request failed due to ' + status);
                 }
             });})
+
+            
+
+            
 
     };
 

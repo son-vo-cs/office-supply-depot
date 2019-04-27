@@ -9,6 +9,20 @@
     color: #FFBF00;
 }
 
+.item-panel {
+    margin-bottom: 100px;
+}
+
+.img-container {
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+}
+
+.img-container img {
+    height: 100%;
+}
+
 /*********************************************
 					PRODUCTS
 *********************************************/
@@ -20,16 +34,9 @@
     }
 }
 .product{
-    border: 1px solid #dddddd;
-    height: 350px;
-    width:330px;
-}
-
-.product>img{
-    max-width: 100%;
-    height: 300px;
-    width: 355px;
-    max-height: 100%;
+    border: 1px solid transparent;
+    height: 410px;
+    width: 410px;
 }
 
 .product-rating{
@@ -38,25 +45,32 @@
 }
 
 .product-title{
-    font-size: 20px;
-}
-
-.product-desc{
-    font-size: 14px;
+    font-size: 30px;
+    margin-top: 60px;
+    margin-bottom: 50px;
 }
 
 .product-price{
-    font-size: 22px;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 50px;
 }
 
 .product-stock{
     color: #74DF00;
-    font-size: 20px;
-    margin-top: 10px;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.product-desc{
+    font-size: 22px;
+    margin-bottom: 10px;
 }
 
 .product-info{
-    margin-top: 50px;
+    margin-top: 10px;
+    margin-botton: 10px;
 }
 
 /*********************************************
@@ -137,7 +151,7 @@
 }
 
 .service-image-left > center > img,.service-image-right > center > img{
-    max-height: 155px;
+    max-height: 55px;
 }
 .margindefine
 {
@@ -153,4 +167,20 @@
 }
 .btn-warning:hover{
     color: #ffffff;
+}
+
+.button-group {
+    margin-top: 70px;
+}
+
+.btn{
+    margin-right: 20px;
+}
+
+.text-format {
+    margin-right: 200px;
+}
+
+.table-invis {
+    border: 1px solid transparent;
 }
