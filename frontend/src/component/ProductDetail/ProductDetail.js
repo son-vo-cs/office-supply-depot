@@ -52,70 +52,83 @@ class ProductDetail extends Component {
     render() {
         return (
             <div>
-                
+                <img className="rounded mx-auto d-block logo" src={logo}/>
             <div className="container-fluid">
                 <div className="content-wrapper">
-                    <div className="item-panel">
-                        <div className="row">
-                            <div className="col-xs-6">
-                                <h5>
-                                    <span className="glyphicon glyphicon-shopping-cart"/> Shopping
-                                    Cart
-                                </h5>
-                            </div>
-                        <div className="col-xs-6 padButton">
-                            <Link to="/">
-                                <button type="button" className=" btn btn-link btn-sm">
-                                    <span className="glyphicon glyphicon-chevron-left"></span>
-                                    Continue
-                                    shopping
-                                </button>
-                            </Link>
-                        </div>
+                    <div className="product-title">{this.state.itemData.name}
+
                     </div>
-                        <div className="container">
-                            <div className="col-md-12">
-                                <div className="row">
-                                <div className="product col-md-3 service-image-left margindefine">
+                
+                
+                        <div className="item-panel">
+                            
+                            <div className="row">
 
+                                <div className="product col-sm-5 service-image-left margindefine">
 
-                                        <img className="img-container" 
-                                             src={this.state.itemData.url}
-                                             alt=""/>
+                                    <img className="img-container" src={this.state.itemData.url} alt=""/>
 
                                 </div>
 
 
 
 
-                            <div className="col-md-7">
-                                <div className="product-title">{this.state.itemData.name}</div>
-                                <div className="product-desc">Weight: {this.state.itemData.weight} lb</div>
-                                <hr/>
-                                    <div className="product-price">$ {this.state.itemData.price}</div>
+                                <div className="col-sm-5">
+                                    
+                                    <table className="table-invis">
+                                        
 
-                                    <div className="product-stock">{this.state.status}</div>
-                                    <hr/>
-                                        <div className="btn-group cart">
-                                            <button type="button" className="btn btn-success" onClick={(event)=> this.addToShoppingcart(event,this.state.itemData.itemid)}>
-                                                Add to cart
-                                            </button>
-                                        </div>
-                                <div className="btn-group wishlist paddingdefine">
-                                    <button type="button" className="btn btn-warning" onClick={() => {this.props.history.push('/cart')}}>
-                                        Shopping Cart
-                                    </button>
+                                        <tbody>
+                                                    
+                                            
+                                            
+                                            <tr>                     
+                                                <td>
+                                                    <div className="product-price">Price:$ {this.state.itemData.price}</div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>                                                
+                                                <td>
+                                                    <div className="product-stock">{this.state.status}</div>
+                                                    <div className="product-desc">Weight: {this.state.itemData.weight} lb</div>
+                                                </td>
+                                            </tr>
+
+
+                        
+
+                                            
+                                            <tr>
+                                             
+                                                <td>
+
+                                                    <div className="button-group">
+                                                        <button type="button" className="btn btn-success" onClick={(event)=> this.addToShoppingcart(event,this.state.itemData.itemid)}>
+                                                            Add to cart
+                                                        </button>
+
+                                                        <button type="button" className="btn btn-warning" onClick={() => {this.props.history.push('/cart')}}>
+                                                            Shopping Cart
+                                                        </button>
+                                                    
+                                                        <button type="button" className="btn btn-danger" onClick={() => {this.props.history.push('/')}}>
+                                                            Main Page
+                                                        </button>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div className="btn-group wishlist paddingdefine">
-                                    <button type="button" className="btn btn-danger" onClick={() => {this.props.history.push('/')}}>
-                                        Main Page
-                                    </button>
-                                </div>
+
+                                
                             </div>
                         </div>
-                        </div>
-                        </div>
-                    </div>
+                </div>
+                       
 
                     <div className="container-fluid">
                         <div className="col-md-12 product-info">
@@ -164,7 +177,7 @@ class ProductDetail extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            
 
         </div>)
     }
