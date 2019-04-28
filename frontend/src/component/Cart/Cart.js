@@ -12,7 +12,7 @@ class Cart extends Component {
         itemId:[...new Set(UserStoreService.getShoppingCart())],
         qualities: undefined,
         itemList: [],
-        totalPrice: [],
+        totalPrice: UserStoreService.setTotalPrice(0),
         totalWeight: [],
         wareHouseNumbers: [],
     };
@@ -43,6 +43,7 @@ class Cart extends Component {
             userService.getItem(JSON.stringify(body)).then((data) => {
                 console.log(data);
                 list.push(data);
+
 
                 // Set WareHouse Id
                 wareHouse.push(data.warehouseid);
