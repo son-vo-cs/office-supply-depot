@@ -204,7 +204,7 @@ class Cart extends Component {
                                 </div>
                                 <div className="header padButton">
                                     <Link to="/">
-                                        <button type="button" className=" btn btn-link btn-sm">
+                                        <button type="button" className=" btn btn-link btn-md">
                                             <span className="glyphicon glyphicon-chevron-left"></span>
                                             Continue Shopping
                                         </button>
