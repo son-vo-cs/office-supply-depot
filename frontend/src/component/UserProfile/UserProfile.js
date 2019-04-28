@@ -48,7 +48,7 @@ class UserProfile extends Component {
     }
 
     render() {
-        return (<div className="bg">
+        return (
 
 
             <div className="container">
@@ -61,14 +61,13 @@ class UserProfile extends Component {
                 </Navbar>
 
                 <div className="card-box">
-                    <h4 className="m-t-0 header-title"><b>User Information</b></h4>
-                    <p className="text-muted m-b-30 font-13">
+                    <h4 className="header-title"><b>User Information</b></h4>
+                    <p className="font-14">
                         Name: {UserStoreService.getUserName()}
                     </p>
-                    <p className="text-muted font-13">
+                    <p className="font-14">
                         Email: {UserStoreService.getUserEmail()}
                     </p>
-
                 </div>
 
                 <div className="card-box">
@@ -83,10 +82,10 @@ class UserProfile extends Component {
                         })
                     }
                 </div>
-                        </div>
+            </div>
 
 
-        </div>);
+        );
     }
 }
 

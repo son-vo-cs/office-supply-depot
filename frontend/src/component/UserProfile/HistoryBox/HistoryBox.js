@@ -33,57 +33,51 @@ class HistoryBox extends Component {
 
     render() {
         return (
-            <div>
-                <div className="bg">
-                    <div className="text-muted m-b-30 font-13">
-                    OrderId: {this.props.orderId}
-                    </div>
-                    <div className="text-muted m-b-30 font-13">
-                    OrderStatus: {this.props.status}
-                    </div>
-                    <div className="text-muted m-b-30 font-13">
+            <div className="order-box">
+                <div className="m-b-30 font-15">
+                    <strong>Order ID: {this.props.orderId}</strong>
+                </div>
+                <div className="m-b-30 font-13">
+                    Status: {this.props.status}
+                </div>
+                <div className="m-b-30 font-13">
                     Date: {this.props.orderDate}
-                    </div>
-                    <div className="text-muted m-b-30 font-13">
-                    TotalPrice: ${this.props.totalPrice}
+                </div>
+                
+
+                <div className="row clearfix">
+                    <div className="col-md-12 column">
+                        <table className="table table-bordered table-hover" id="tab_logic">
+                            <thead>
+                                <tr>
+                                    <th> Picture </th>
+                                    <th> Name </th>
+                                    <th> Price </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {this.state.orderHistoryDetail.map((item, idx) => (
+                                <tr id="addr0" key={idx}>
+                                
+                                    <td>
+                                        <img className="rounded managerpicsize" src= {item.url} />
+                                    </td>
+                                    <td>
+                                        {item.name}
+                                    </td>                   
+                                    <td className="text-center">
+                                        ${item.price}
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-            <div className="row clearfix">
-            <div className="col-md-12 column">
-            <table
-            className="table table-bordered table-hover"
-            id="tab_logic"
-            >
-            <thead>
-                <tr>
-                    <th> Picture </th>
-                    <th> Name </th>
-                    <th> Price </th>
-                </tr>
-            </thead>
-            <tbody>
-            {this.state.orderHistoryDetail.map((item, idx) => (
-                <tr id="addr0" key={idx}>
-                
-                    <td>
-                        <img className="rounded managerpicsize" src= {item.url} />
-                    </td>
-                    <td>
-                        {item.name}
-                    </td>
-                    <td className="text-center">
-                        ${item.price}
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-
-
-            </div>
-            </div>
-
+                <div className="font-13">
+                    Total Price: ${this.props.totalPrice}
+                </div>
             </div>
             )
 
