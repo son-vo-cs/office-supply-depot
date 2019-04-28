@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import './App.css';
 import {Route, Switch, BrowserRouter} from 'react-router-dom';
 import Login from "./component/Authentication/Login/Login";
 import Checkout from './component/Checkout/Checkout';

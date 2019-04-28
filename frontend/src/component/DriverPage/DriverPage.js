@@ -100,68 +100,43 @@ clickHandler = (event,props) =>{
                     </Nav>
                 </Navbar>
                 <div className="Dbutton" id="start">
+                     
+                    {/* Click Start Delivery Button */}
                     {this.state.start &&
                     <button onClick={(event) => this.clickHandler(event,this.props)} className="btn btn-danger">
                         Start Delivery
                     </button>}
+
+                    {/* Display Address Table */}
                     {this.state.clicked &&
                     <div className="container">
-                        <button className="btn btn-danger mb-2" onClick={(event) => this.deliverySubmit(event,this.props)}>
+                        <button className="btn btn-danger btn-finish" onClick={(event) => this.deliverySubmit(event,this.props)}>
                             End Delivery
                         </button>
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
-                            <li className="nav-item">
-                                <a className="nav-link active" id="home-tab" data-toggle="tab" href="#list"
-                                    role="tab" aria-controls="home" aria-selected="true">List
-                                </a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" id="profile-tab" data-toggle="tab" href="#map"
-                                role="tab" aria-controls="profile" aria-selected="false">Map
-                                </a>
-                            </li>
-                        </ul>
-
-
-                        <div className="tab-content" id="myTabContent">
-                            <div className="tab-pane fade show active" id="list" role="tabpanel" 
-                                aria-labelledby="home-tab">
-                                <table className="table table-bordered" id="tab_logic">
-                                    <thead>
-                                    <tr>
-                                        <th className="text-center">#</th>
-                                        <th className="text-center">Delivery Address</th>
+                        <table className="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th className="text-center">Delivery Order Address List</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.addresses.map((item, idx) => (
+                                    <tr id="addr0" key={idx}>
+                                        <td>
+                                            {this.state.addresses[idx]}
+                                        </td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-
-                                    {this.state.addresses.map((item, idx) => (
-                                            <tr id="addr0" key={idx}>
-                                                <td>{idx+1}</td>
-                                                <td>
-                                                    {this.state.addresses[idx]}
-                                                </td>
-                                            </tr>
-                                        ))}
-
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div className="tab-pane fade" id="map" role="tabpanel"
-                            aria-labelledby="profile-tab">
-                                {this.state.clicked &&
-                                    <div className="inline">
-                                        {console.log("ware",this.state.wareHouseId)}
-                                        <GoogleMap wareHouseId = {this.state.wareHouseId} addresses = {this.state.addresses} />
-                                    </div>
-                                }
-                            </div>  
-
-                        </div>
-
-                                            
+                                ))}
+                            </tbody>
+                        </table>
                     </div>}
+
+                    {/* Display Map and Directions */}                   
+                    {this.state.clicked &&
+                    <div className="inline">
+                        <GoogleMap wareHouseId = {this.state.wareHouseId} addresses = {this.state.addresses} />
+                    </div>
+                    }                            
                 </div>             
             </div>
         );

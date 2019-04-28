@@ -72,7 +72,6 @@ class UserProfile extends Component {
 
                 <div className="card-box">
                     <h4 className="m-t-0 header-title"><b>Order History</b></h4>
-
                     {
                         this.state.orderHistory.map((val, index) => {
                             return (
