@@ -244,21 +244,21 @@ class Cart extends Component {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="text-center">
+                                            <td className="cell">
                                                 {item.weight}
                                             </td>
-                                            <td className="text-center">
+                                            <td className="cell">
                                                 ${item.price}
                                             </td>
-                                            <td className="text-center">
+                                            <td className="cell">
                                                 {this.state.qualities[idx]}
                                             </td>
-                                            <td className="text-center">
+                                            <td className="cell">
                                                ${(item.price * this.state.qualities[idx]).toFixed(2)}
                                             </td>
-                                            <td className="text-center"> 
+                                            <td className="cell"> 
                                                 <div>
-                                                    <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-xs">
+                                                    <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-lg mx-auto">
                                                         <span className="glyphicon glyphicon-trash"> </span>
                                                     </button>
 

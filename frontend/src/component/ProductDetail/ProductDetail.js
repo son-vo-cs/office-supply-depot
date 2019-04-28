@@ -55,17 +55,18 @@ class ProductDetail extends Component {
                     <div className="panel panel-info">
                         <div className="panel-heading">
                             <img className="rounded mx-auto d-block logo" src={logo}/>
-                            <div className="float-right header">
-                                <button type="button" className="btn btn-default" onClick={() => {this.props.history.push('/cart')}}>
-                                    <span className="glyphicon glyphicon-shopping-cart"/>
-                                    Shopping Cart
-                                </button>
+                            <div className="btns float-right">              
                                 <Link to="/">
-                                    <button type="button" className="btn btn-link btn-md">
+                                    <button type="button" className="btn btn-link inline-block">
                                         <span className="glyphicon glyphicon-chevron-left"></span>
                                         Continue Shopping
                                     </button>
                                 </Link>
+                            
+                                <button type="button" className="btn btn-link inline-block" onClick={() => {this.props.history.push('/cart')}}>
+                                    <span className="glyphicon glyphicon-shopping-cart"/>
+                                    Shopping Cart
+                                </button>     
                             </div>
                         </div>
                         <div className = "panel-body">                            

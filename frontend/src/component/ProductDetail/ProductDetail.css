@@ -203,12 +203,6 @@
     padding: 20px;
 }
 
-
-.header{
-    display: inline-block;
-    margin-bottom: 30px;
-}
-
 .pic{
     width: 50%;
     text-align:center;
@@ -216,4 +210,9 @@
 
 .info{
     width: 50%;
+}
+
+.btns{
+    display: inline-block;
+    margin-bottom: 30px;
 }

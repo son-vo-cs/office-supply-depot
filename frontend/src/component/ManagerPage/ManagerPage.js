@@ -139,32 +139,27 @@ class ManagerPage extends Component {
                             >
                                 <thead>
                                 <tr>
-                                    <th> Id </th>
-                                    <th> Name </th>
-                                    <th> Picture </th>
-
-                                    <th> Delete </th>
+                                    <th className="text-center itemNum"> ID </th>
+                                    <th className="itemName"> Name </th>
+                                    <th className="text-center itemPic"> Picture </th>
+                                    <th className="text-center itemDelete"> Delete </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {this.state.allData.map((item, idx) => (
                                     <tr id="addr0" key={idx}>
-                                        <td>
+                                        <td className="cell">
                                             {item.itemid}
                                         </td>
-                                        <td>
+                                        <td> 
                                             {item.name}
                                         </td>
-                                        <td>
+                                        <td className="cell">
                                             <img className="rounded managerpicsize" src= {item.url} />
                                         </td>
-
-                                        <td>
-                                            <button
-                                                onClick={() => {this.handleRemoveRow(idx); console.log(this.state.allData, "asdad")}}
-                                                className="pull-right btn btn-danger"
-                                            >
-                                                Delete Row
+                                        <td className="cell">            
+                                            <button onClick={() => {this.handleRemoveRow(idx);}} className="btn btn-lg mx-auto">
+                                                <span className="glyphicon glyphicon-trash"> </span>
                                             </button>
                                         </td>
                                     </tr>

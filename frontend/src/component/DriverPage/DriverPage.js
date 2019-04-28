@@ -109,43 +109,62 @@ clickHandler = (event,props) =>{
                         <button className="btn btn-danger mb-2" onClick={(event) => this.deliverySubmit(event,this.props)}>
                             End Delivery
                         </button>
-                        <table
-                            className="table table-bordered table-hover"
-                            id="tab_logic"
-                        >
-                            <thead>
-                            <tr>
-                                <th className="text-center">#</th>
-                                <th className="text-center">Delivery Address</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        <ul className="nav nav-tabs" id="myTab" role="tablist">
+                            <li className="nav-item">
+                                <a className="nav-link active" id="home-tab" data-toggle="tab" href="#list"
+                                    role="tab" aria-controls="home" aria-selected="true">List
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" id="profile-tab" data-toggle="tab" href="#map"
+                                role="tab" aria-controls="profile" aria-selected="false">Map
+                                </a>
+                            </li>
+                        </ul>
 
-                            {this.state.addresses.map((item, idx) => (
-                                    <tr id="addr0" key={idx}>
-                                        <td>{idx+1}</td>
-                                        <td>
-                                            {this.state.addresses[idx]}
-                                        </td>
+
+                        <div className="tab-content" id="myTabContent">
+                            <div className="tab-pane fade show active" id="list" role="tabpanel" 
+                                aria-labelledby="home-tab">
+                                <table className="table table-bordered" id="tab_logic">
+                                    <thead>
+                                    <tr>
+                                        <th className="text-center">#</th>
+                                        <th className="text-center">Delivery Address</th>
                                     </tr>
-                                ))}
+                                    </thead>
+                                    <tbody>
 
-                            </tbody>
-                        </table>
+                                    {this.state.addresses.map((item, idx) => (
+                                            <tr id="addr0" key={idx}>
+                                                <td>{idx+1}</td>
+                                                <td>
+                                                    {this.state.addresses[idx]}
+                                                </td>
+                                            </tr>
+                                        ))}
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="tab-pane fade" id="map" role="tabpanel"
+                            aria-labelledby="profile-tab">
+                                {this.state.clicked &&
+                                    <div className="inline">
+                                        {console.log("ware",this.state.wareHouseId)}
+                                        <GoogleMap wareHouseId = {this.state.wareHouseId} addresses = {this.state.addresses} />
+                                    </div>
+                                }
+                            </div>  
+
+                        </div>
+
+                                            
                     </div>}
-
-
-                </div>
-
-                {this.state.clicked &&
-                <div className="inline">
-                    {console.log("ware",this.state.wareHouseId)}
-                    <GoogleMap wareHouseId = {this.state.wareHouseId} addresses = {this.state.addresses} />
-                </div>}
+                </div>             
             </div>
-
         );
-
     };
 }
 
