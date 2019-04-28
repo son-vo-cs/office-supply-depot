@@ -6,7 +6,7 @@ import Modal from "@material-ui/core/Modal/Modal";
 import AddItem from "./AddItem/AddItem";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
-import logo from "../images/ezgif-1-e382b6df9dbb.png";
+import logo from "../images/logo1.png";
 import userService from "../../common/services/User/UserService";
 import UserStoreService from "../../common/services/User/UserStoreService";
 

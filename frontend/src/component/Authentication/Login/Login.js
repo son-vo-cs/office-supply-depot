@@ -22,7 +22,7 @@ class Login extends React.Component  {
             userStoreService.setUserName(data.firstname);
             userStoreService.setUserEmail(data.email);
             userStoreService.setUserLevel(data.level);
-            console.log(this.props,"ougter");
+            console.log(this.props,"outer");
             console.log(data.level,"level", this.props)
             if(data.level === 2)
             {
@@ -47,21 +47,20 @@ class Login extends React.Component  {
     return (
         <div>
             <div className="loginbox">
-                <h1>Welcome</h1>
+                <h1 className>Login</h1>
+                <h6>Please enter your e-mail and password:</h6>
                 <form onSubmit={(event) => this.handleSubmit(event,this.props.closeModal)}>
                     <div className="inner-icon left-addon">
                         <span className="glyphicon glyphicon-user"/>
-                        <input type="email" name="email" placeholder="Enter email address" required/>
+                        <input type="email" name="email" placeholder="Email" required/>
                     </div>
                     <div className="inner-icon left-addon">
                         <span className="glyphicon glyphicon-lock"/>
-                        <input type="password" name="psw" placeholder="Enter Password" required/>
+                        <input type="password" name="psw" placeholder="Password" required/>
                     </div>
-                    <input type="submit" name="" value="Login">
+                    <input type="submit" name="" value="Login"/>
 
-                    </input>
-
-                    <a href="/register">Don't have an account? </a>
+                    <a href="/register">Don't have an account? Signup here</a>
                 </form>
             </div>
 

@@ -1,6 +1,8 @@
 import React from 'react';
+import "./Register.css";
 import userService from "../../../common/services/User/UserService";
 import userStoreService from "../../../common/services/User/UserStoreService";
+import logo from "../../images/logo1.png";
 
 
 
@@ -35,52 +37,52 @@ class Register extends React.Component {
     };
 
     render() {
-        return (<div>
-
-
-            <div className="container">
-                <h4 className="header-title m-t-0">Register</h4>
-                <p className="text-muted font-14 m-b-20">
-                    Please follow the instruction to fill in the register form.
-                </p>
-
-                <form onSubmit={(event) => this.handleSubmit(event,this.props)}>
-                    <div className="form-group">
-                        <label htmlFor="fisrtName">First Name<span className="text-danger">*</span></label>
-                        <input type="text" name="fname" required
-                               placeholder="Enter user name" className="form-control" id="fname"/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="lastName">Last Name<span className="text-danger">*</span></label>
-                        <input type="text" name="lname" required
-                               placeholder="Enter user name" className="form-control" id="lname"/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="emailAddress">Email address<span className="text-danger">*</span></label>
-                        <input type="email" name="email" required
-                               placeholder="Enter email" className="form-control" id="email"/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="pass1">Password<span className="text-danger">*</span></label>
-                        <input type="password" name="password" required
-                               placeholder="Password" className="form-control" id="password"/>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="passWord2">Confirm Password <span className="text-danger">*</span></label>
-                        <input type="password" required name='cPassword'
-                               placeholder="Password" className="form-control" id="cPassword"/>
+        return (
+            
+                <div className="container">
+                    <div className="register-header">
+                        <img className="rounded mx-auto d-block" src={logo}/>
                     </div>
 
-                    <div className="form-group text-right m-b-0">
+                    <div className="register-box">
+                        <h2>New User Information</h2>
+                        <h6>Please fill in the information below: </h6>
 
-                        <input type='submit' name='Submit' className="btn btn-danger"/>
+                        <form onSubmit={(event) => this.handleSubmit(event,this.props)}>
+                            <div className="form-group">
+                                <label htmlFor="firstName">First Name<span className="text-danger">*</span></label>
+                                <input type="text" name="fname" required
+                                    placeholder="First Name" className="form-control" id="fname"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="lastName">Last Name<span className="text-danger">*</span></label>
+                                <input type="text" name="lname" required
+                                    placeholder="Last Name" className="form-control" id="lname"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="emailAddress">Email<span className="text-danger">*</span></label>
+                                <input type="email" name="email" required
+                                    placeholder="Email" className="form-control" id="email"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="pass1">Password<span className="text-danger">*</span></label>
+                                <input type="password" name="password" required
+                                    placeholder="Password" className="form-control" id="password"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="passWord2">Confirm Password <span className="text-danger">*</span></label>
+                                <input type="password" required name='cPassword'
+                                    placeholder="Password" className="form-control" id="cPassword"/>
+                            </div>
 
-
+                            <div className="form-group submitbutton">
+                                <input type='submit' name='Submit' value="Create My Account" className="btn btn-danger"/>
+                            </div>
+                        </form>
                     </div>
-                </form>
-
-            </div>
-        </div>);
+                    
+                
+            </div>);
     };
 
 }

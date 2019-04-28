@@ -7,7 +7,7 @@ export default class GoogleMap extends Component{
     state = {
         center: { lat: 37.335141, lng: -121.881093 },
         addresses: this.props.addresses,
-        warehouse: null,
+        wareHouseId: 0,
         warehouse1: "1 Washington Sq, San Jose, CA 95192",
         warehouse2: "500 El Camino Real, Santa Clara, CA 95053"
 
@@ -21,7 +21,7 @@ export default class GoogleMap extends Component{
         loadScript(
             "https://maps.googleapis.com/maps/api/js?key=AIzaSyDc74IQbxDTgM54Dnk8SLb3Cr5yty2xz-c&callback=initMap"
         );
-
+        console.log(this.state);
         window.initMap = this.initMap;
 
     };
@@ -70,16 +70,17 @@ export default class GoogleMap extends Component{
 
     calculateAndDisplayRoute = (directionsService, directionsDisplay) => {
         var address = this.state.addresses;
-        var ware = this.state.warehouse;
-        console.log(address);
+        var ware = this.state.warehouseID;
+        var currentLocation;
+        console.log("test",address,ware);
         navigator.geolocation.getCurrentPosition(function(position) {
             var new_pos = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
-            var currentLocation = new_pos;
-            address.unshift(currentLocation);
-
+            currentLocation = new_pos;
+            //address.unshift(currentLocation);
+        });
             const request = {
                 waypoints: [],
                 optimizeWaypoints: true,
@@ -91,14 +92,17 @@ export default class GoogleMap extends Component{
 
             if(ware == 1)  // stop by warehouse 1
             {
-                request.origin = this.state.warehouse1;
-                request.destination = this.state.warehouse1;
+                request.origin = "1 Washington Sq, San Jose, CA 95192";
+                request.destination = "1 Washington Sq, San Jose, CA 95192";
             }
             else if(ware == 2) // stop by warehouse 2
             {
-                request.destination = this.state.warehouse2;
-                request.destination = this.state.warehouse2;
+                request.origin = "500 El Camino Real, Santa Clara, CA 95053";
+                request.destination = "500 El Camino Real, Santa Clara, CA 95053";
             }
+
+            console.log("origin",request.origin);
+            console.log("destination",request.destination);
            
             /*
             console.log("passed addresses",address);
@@ -125,28 +129,87 @@ export default class GoogleMap extends Component{
             for(var i = 0; i < address.length; i++)
             {
                 request.waypoints.push({
-                location: address[i],
-                stopover: true
+                    location: address[i],
+                    stopover: true
                 });
             }
+
+            request.origin = "1 Washington Sq, San Jose, CA 95192";
+            request.destination = "1 Washington Sq, San Jose, CA 95192";
             console.log("waypoints",request);
 
-            var a = [];
+            var fullRoute = []; // will contain the new route to be passed
+            var wayorder = [];  // optimized waypoint order of indexes 
 
             // takes request.waypoints[origin ... destination] returns result.routes[0].waypoint_order[...]
             directionsService.route(request, function(result, status) {
                 if (status === window.google.maps.DirectionsStatus.OK)
                 {
-                    a = result.routes[0].waypoint_order;
-                    console.log(a);
+                    wayorder = result.routes[0].waypoint_order;
+                    console.log(wayorder,wayorder.length);
                     //directionsDisplay.setDirections(result);
+                    for(var i = 0; i < wayorder.length; i++)
+                    {
+                        /*
+                        console.log(request.waypoints[wayorder[i]]);
+                        fullRoute.push({
+                            location: request.waypoints[wayorder[i]],
+                            stopover: true
+                        });
+                        */
+                        
+                    
+                    }
+                    //directionsDisplay.setDirections(result);
+                    console.log("done",fullRoute);  
                 }
                 else
                 {
                     window.alert('Request failed due to ' + status);
                 }
-            });})
+            });
 
+
+
+                const request2 = {
+                    origin: "1 Washington Sq, San Jose, CA 95192",
+                    destination: "1 Washington Sq, San Jose, CA 95192",
+                    travelMode: 'DRIVING',
+                    waypoints: []
+                };
+
+                request2.waypoints.push({
+                    location: currentLocation,
+                    stopover: true
+                });
+
+                for(var i = 0; i < wayorder.length; i++)
+                {   
+                    request2.waypoints.push({
+                        location: request.waypoints[wayorder[i]],
+                        stopover: true
+                    });
+                }
+                    
+                console.log(request2);
+
+                // display Map Directions
+                directionsService.route(request2, function(result2, status) {
+                    if (status === window.google.maps.DirectionsStatus.OK)
+                    {
+                        directionsDisplay.setDirections(result2);
+                    }
+                    else
+                    {
+                        window.alert('Request failed due to ' + status);
+                    }
+                });
+
+                
+                
+         
+
+           
             
 
             

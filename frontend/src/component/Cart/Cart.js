@@ -3,6 +3,7 @@ import "./Cart.css"
 import {Link} from "react-router-dom";
 import UserStoreService from "../../common/services/User/UserStoreService";
 import userService from "../../common/services/User/UserService";
+import logo from "../images/logo1.png";
 
 class Cart extends Component {
 
@@ -190,113 +191,115 @@ class Cart extends Component {
         return (
             <div>
                 <div className="container">
-                    <div className="row">
-                        <div className="col-xs-8">
-                            <div className="panel panel-info">
-                                <div className="panel-heading">
-                                    <div className="panel-title">
-                                        <div className="row padHeader">
-                                            <div className="col-xs-6">
-                                                <h5><span className="glyphicon glyphicon-shopping-cart"/> Shopping
-                                                    Cart</h5>
-                                            </div>
-                                            <div className="col-xs-6 padButton">
-                                                <Link to="/">
-                                                    <button type="button" className=" btn btn-link btn-sm">
-                                                        <span className="glyphicon glyphicon-chevron-left"></span>
-                                                        Continue
-                                                        shopping
-                                                    </button>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div className="panel panel-info">
+                        <div className="panel-heading">
+                            <div className="logo">
+                                <img className="rounded mx-auto d-block" src={logo}/>
+                            </div>
+                            <div className="panel-title">
+                                <div className="header">
+                                    <h5>
+                                        <span className="glyphicon glyphicon-shopping-cart"/> Shopping Cart
+                                    </h5>
                                 </div>
-                                <div className="panel-body">
-
-                                    {this.state.itemList.length > 0 &&
-                                    <div>
-                                        <table className="table">
-                                            <thead>
-                                            <tr>
-                                                <th className="text-center"></th>
-                                                <th className="text-center">Weight(lbs)</th>
-                                                <th className="text-center">Unit Price</th>
-                                                <th className="text-center">Qty</th>
-                                                <th className="text-center">Subtotal</th>
-                                                <th>Remove</th>
-                                            </tr>
-                                            </thead>
-
-                                            <tbody>
-
-
-                                            {this.state.itemList.map((item, idx) => (
-                                                <tr>
-                                                    <td>
-                                                        <div className="row">
-                                                            <div className="col"><img className="CartImgSize img-responsive"
-                                                                                      src={item.url}/>
-                                                            </div>
-                                                            <div className="col">
-                                                                {item.name}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {item.weight}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {item.price}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {this.state.qualities[idx]}
-                                                    </td>
-                                                    <td className="text-center">
-                                                        {(item.price * this.state.qualities[idx]).toFixed(2)}
-                                                    </td>
-                                                    <td>
-                                                        <div>
-                                                            <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-xs">
-                                                                <span className="glyphicon glyphicon-trash"> </span>
-                                                            </button>
-
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-
-                                            </tbody>
-                                        </table>
-                                    </div>}
-                                    {this.state.itemList.length === 0 &&
-                                    <div className="panel panel-default">
-                                        <div className="panel-body panel-empty text-center">
-                                            <h5>Your shopping cart is empty.</h5>
-                                        </div>
-                                    </div>
-                                    }
-
-                                </div>
-                                <div className="panel-footer">
-                                    <div className="row">
-                                        <div className="col padTotal">
-                                            <h3 className="text-right">
-                                                Total:    <strong>$ {UserStoreService.getTotalPrice()}</strong></h3>
-                                        </div>
-                                    </div>
-                                    <div className="float-right">
-
-                                        <button type="button" className="btn btn-success"
-                                                onClick={(event) => this.checkAvailable(event,this.props)}>
-                                            <span className="glyphicon glyphicon-share-alt"></span>
-                                            Proceed to Checkout
+                                <div className="header padButton">
+                                    <Link to="/">
+                                        <button type="button" className=" btn btn-link btn-sm">
+                                            <span className="glyphicon glyphicon-chevron-left"></span>
+                                            Continue Shopping
                                         </button>
-                                    </div>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        
+                        <div className="panel-body">
+
+                            {this.state.itemList.length > 0 &&
+                            <div>
+                                <table className="table">
+                                    <thead>
+                                    <tr>
+                                        <th className="text-center itemName"></th>
+                                        <th className="text-center itemColLarge">Weight(lbs)</th>
+                                        <th className="text-center itemColLarge">Unit Price</th>
+                                        <th className="text-center itemColSmall">Qty</th>
+                                        <th className="text-center itemColLarge">Subtotal</th>
+                                        <th className="text-center itemColSmall">Remove</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+
+                                    {this.state.itemList.map((item, idx) => (
+                                        <tr>
+                                            <td>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <img className="CartImgSize img-responsive" src={item.url}/>
+                                                    </div>
+                                                    <div className="col">
+                                                        {item.name}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="text-center">
+                                                {item.weight}
+                                            </td>
+                                            <td className="text-center">
+                                                ${item.price}
+                                            </td>
+                                            <td className="text-center">
+                                                {this.state.qualities[idx]}
+                                            </td>
+                                            <td className="text-center">
+                                               ${(item.price * this.state.qualities[idx]).toFixed(2)}
+                                            </td>
+                                            <td className="text-center"> 
+                                                <div>
+                                                    <button onClick={() => this.handleRemoveRow(idx)} type="button" className="btn btn-link btn-xs">
+                                                        <span className="glyphicon glyphicon-trash"> </span>
+                                                    </button>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                    </tbody>
+                                </table>
+                            </div>}
+                            {this.state.itemList.length === 0 &&
+                            <div className="panel panel-default">
+                                <div className="panel-body panel-empty text-center">
+                                    <h5>Your shopping cart is empty.</h5>
+                                </div>
+                            </div>
+                            }
+
+                        </div>
+                        <div className="panel-footer">
+                            <div className="row">
+                                <div className="col padTotal text-right">
+                                    <h3>
+                                        {console.log(UserStoreService.getTotalPrice())}
+                                        Total:    <strong>${UserStoreService.getTotalPrice()}</strong>
+                                    </h3>
+                                    <h6>
+                                        Shipping calculated at checkout
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="float-right">
+
+                                <button type="button" className="btn btn-danger"
+                                        onClick={(event) => this.checkAvailable(event,this.props)}>
+                                    <span className="glyphicon glyphicon-share-alt"></span>  Proceed to Checkout
+                                </button>
+                            </div>
+                        </div>
+                    </div>     
                 </div>
             </div>
         );

@@ -3,6 +3,7 @@ import "./Checkout.scss"
 import Form from "react-bootstrap/Form";
 import userService from "../../common/services/User/UserService";
 import UserStoreService from "../../common/services/User/UserStoreService";
+import logo from "../images/logo1.png";
 
 class Checkout extends Component {
     state = {
@@ -165,25 +166,26 @@ class Checkout extends Component {
 
     render() {
         return (
-            <div className="bg">
                 <div className="container">
-                    <h1 className="m-t-0 header-title"><b>Check out</b></h1>
+                    <img className="rounded mx-auto d-block logo" src={logo}/>
 
                     <div className="card-box">
-                        <h4 className="m-t-0 header-title"><b>Shipping Information</b></h4>
+                        <h4 className="m-t-0 header-title">
+                            <b>Shipping Information</b>
+                        </h4>
                         <p className="text-muted m-b-30 font-13">
-                            Enter checkout information
+                            Enter checkout information:
                         </p>
                         <form onSubmit={(event) => this.shippingAddressSubmit(event)}>
                             <div className="form-group">
                                 <label htmlFor="fisrtName">First Name<span className="text-danger">*</span></label>
                                 <input type="text" name="fname" required disabled={this.state.shippingDisable}
-                                       placeholder="Enter user name" className="form-control" id="firstName" />
+                                       placeholder="First Name" className="form-control" id="firstName" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="lastName">Last Name<span className="text-danger">*</span></label>
                                 <input type="text" name="lname" required disabled={this.state.shippingDisable}
-                                       placeholder="Enter user name" className="form-control" id="lastName" />
+                                       placeholder="Last Name" className="form-control" id="lastName" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="address">Address<span className="text-danger">*</span></label>
@@ -212,7 +214,7 @@ class Checkout extends Component {
                             </div>
 
 
-                            <div className="form-group text-right m-b-0">
+                            <div className="form-group submitbutton">
                                 <button className="btn btn-danger" type="submit">
                                     Continue
                                 </button>
@@ -226,27 +228,83 @@ class Checkout extends Component {
                         <h4 className="m-t-0 header-title"><b>Shipping method</b></h4>
 
                         <p className="text-muted m-b-30 font-13">
-                           Pick shipping option
+                           Pick shipping option:
                         </p>
+                        <div class="panel panel-default">
+                        
+                            <table className="table table-bordered">
+                                {this.state.over &&
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <div className="radio">
+                                                <label><input type="radio" id='regular' name="optradio"
+                                                            className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
+                                                    <strong>Everyday Free Shipping</strong>
+                                                </label>
+                                                <p className="tab">Transit time: 2 business days</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="price">                            
+                                                <label htmlFor='free'>
+                                                    <font color="red">FREE</font>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div className="radio">
+                                                <label><input type="radio" id='express' name="optradio"
+                                                            className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "2"})}}/>
+                                                    <strong>Premium Shipping</strong>
+                                                </label>   
+                                                <p className="tab">Transit time: 1 business day</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="price">
+                                                <label htmlFor='premium'>$25.00</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div className="radio">
+                                                <label><input type="radio" id='express' name="optradio"
+                                                            className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"});console.log("asdad")
+                                                            }}/>
+                                                    <strong>Pick up in our Warehouse</strong>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="price">
+                                                <label htmlFor='express'>
+                                                    <font color="red">FREE</font></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                }
 
-                        <table className="table">
-                            {this.state.over &&
+                                {this.state.under &&
                                 <tbody>
+
                                 <tr>
                                     <td>
                                         <div className="radio">
                                             <label><input type="radio" id='regular' name="optradio"
-                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "1"})}}/>
-                                                <strong>Everyday Free Shipping</strong>
+                                                        className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "4"})}}/>
+                                                <strong>Standard Shipping</strong>
+                                                <p className="tab">Transit time: 2 business days</p>
                                             </label>
-                                            <p className="tab">Transit time: 2 business days</p>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="radiotext">
-                                            <label htmlFor='free'>
-                                                <font color="red">FREE</font>
-                                            </label>
+                                        <div className="price">
+                                            <label htmlFor='premium'>$20.00</label>
                                         </div>
                                     </td>
                                 </tr>
@@ -254,77 +312,24 @@ class Checkout extends Component {
                                     <td>
                                         <div className="radio">
                                             <label><input type="radio" id='express' name="optradio"
-                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "2"})}}/>
-                                                <strong>Premium Shipping</strong>
-                                            </label>   
-                                            <p className="tab">Transit time: 1 business day</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="radiotext">
-                                            <label htmlFor='premium'>$25.00</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div className="radio">
-                                            <label><input type="radio" id='express' name="optradio"
-                                                          className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"});console.log("asdad")
-                                                          }}/>
+                                                        className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"})}}/>
                                                 <strong>Pick up in our Warehouse</strong>
                                             </label>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="radiotext">
+                                        <div className="price">
                                             <label htmlFor='express'>
                                                 <font color="red">FREE</font></label>
                                         </div>
                                     </td>
                                 </tr>
                                 </tbody>
-                            }
-
-                            {this.state.under &&
-                            <tbody>
-
-                            <tr>
-                                <td>
-                                    <div className="radio">
-                                        <label><input type="radio" id='regular' name="optradio"
-                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "4"})}}/>
-                                            <strong>Standard Shipping</strong>
-                                            <p className="tab">Transit time: 2 business days</p>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="radiotext">
-                                        <label htmlFor='premium'>$20.00</label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div className="radio">
-                                        <label><input type="radio" id='express' name="optradio"
-                                                      className="checkoutMargin" required disabled={this.state.shippingMethodDisable} onChange={()=>{this.setState({pickup: "3"})}}/>
-                                            Pick up in our Warehouse
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="radiotext">
-                                        <label htmlFor='express'>
-                                            <font color="red">FREE</font></label>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                            }
-                        </table>
-                        <div className="form-group text-right m-b-0">
+                                }
+                            </table>
+                            
+                        </div>
+                        <div className="form-group submitbutton">
                                 <button onClick={(event) => this.submitDelivery(event)} className="btn btn-danger" type="submit">
                                     Continue
                                 </button>
@@ -337,7 +342,7 @@ class Checkout extends Component {
                         <h4 className="m-t-0 header-title"><b>Payment</b></h4>
 
                         <p className="text-muted m-b-30 font-13">
-                            Enter payment information
+                            Enter payment information:
                         </p>
 
                         <div className="form-group">
@@ -403,11 +408,12 @@ class Checkout extends Component {
                         </div>
 
                         {this.state.submitDeliveryMethod &&
-                        <h4 className="m-t-0 header-title"><b>Total Price: ${UserStoreService.getTotalPrice()}</b>
-                        </h4>
+                        <h3 className="display-price">
+                            Total:    <strong>${UserStoreService.getTotalPrice()}</strong>
+                        </h3>
                         }
 
-                        <div className="form-group text-right m-b-0">
+                        <div className="form-group submitbutton">
                             <button onClick={(event) => this.orderSubmit(event)} className="btn btn-danger"
                                     type="submit">
                                 Place Order
@@ -419,8 +425,7 @@ class Checkout extends Component {
                     </div>
                     }
 
-                        </div>
-                    </div>
+                </div>
 
         );
     }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import logo from "../images/ezgif-1-e382b6df9dbb.png";
+import logo from "../images/logo1.png";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import './DriverPage.css'
@@ -139,7 +139,8 @@ clickHandler = (event,props) =>{
 
                 {this.state.clicked &&
                 <div className="inline">
-                    <GoogleMap addresses = {this.state.addresses} warehouse = {this.state.wareHouseId}/>
+                    {console.log("ware",this.state.wareHouseId)}
+                    <GoogleMap wareHouseId = {this.state.wareHouseId} addresses = {this.state.addresses} />
                 </div>}
             </div>
 
