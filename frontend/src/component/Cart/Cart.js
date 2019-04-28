@@ -75,6 +75,10 @@ class Cart extends Component {
 
                 // Set Shopping Cart List
                 this.setState({itemList: list});
+
+                // Set Quantities
+                UserStoreService.setQuantities(this.state.qualities);
+                
             }).catch((error) => {
                 alert(error.message);
             });
