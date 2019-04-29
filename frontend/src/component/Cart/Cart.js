@@ -33,17 +33,24 @@ class Cart extends Component {
         let totalP = 0;
         let wareHouse = [];
 
+        let real= Array(this.state.itemId.length).fill();
+
+
         let tWeight = 0;
         let weight = [];
+        console.log(this.state.itemId,"item id list before call get Item for loop")
         for (let i = 0; i < this.state.itemId.length; i++) {
             let body = {
                 itemid: this.state.itemId[i],
             };
             console.log(body);
             userService.getItem(JSON.stringify(body)).then((data) => {
-                console.log(data);
-                list.push(data);
+                console.log(data,"getItem Data");
 
+                let index = this.state.itemId.indexOf(data.itemid);
+
+                list[index] = data;
+                console.log(list,"getITEM list")
 
                 // Set WareHouse Id
                 wareHouse.push(data.warehouseid);
@@ -62,6 +69,7 @@ class Cart extends Component {
                 }, 0).toFixed(2));
 
                 console.log(UserStoreService.getTotalPrice(), "fdjhgsdokjfkhbklk")
+
                 // Set Total Weight
                 tWeight =+ data.weight * this.state.qualities[i];
                 weight.push(tWeight);
@@ -75,14 +83,28 @@ class Cart extends Component {
 
                 // Set Shopping Cart List
                 this.setState({itemList: list});
+                console.log(this.state.itemId,"item Id shfdjogkpjdhksgajkjdlkf;")
+                console.log(this.state.itemList,"item List shfdjogkpjdhksgajkjdlkf;")
+                // let real = [];
+                // for(let i = 0; i < this.state.itemId.length; i++){
+                //     for(let i = 0; i < this.state.itemList.length; i++)
+                //     {
+                //         if(this.state.itemId[i] === this.state.itemList[i].itemid){
+                //             real.push(this.state.itemList[i]);
+                //         }
+                //     }
+                // }
+                //
+                // console.log(real,"real item list jhgfghjklhgfdxzfghjkl")
+                //
 
-                // Set Quantities
-                UserStoreService.setQuantities(this.state.qualities);
-                
+
             }).catch((error) => {
                 alert(error.message);
             });
         }
+
+
         for (let i = 0; i < this.state.itemId.length; i++) {
             let count = 0;
             for(let j = 0; j < this.state.rows.length; j++) {
@@ -101,6 +123,8 @@ class Cart extends Component {
         // // Set Quantities
         // UserStoreService.setQuantities(this.state.qualities);
         // console.log(this.state.qualities,"quantities")
+
+
 
 
     }
@@ -175,6 +199,8 @@ class Cart extends Component {
 
 
     };
+
+
 
     getTotalPrice = () => {
 

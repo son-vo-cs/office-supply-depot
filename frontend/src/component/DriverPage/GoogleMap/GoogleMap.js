@@ -142,7 +142,6 @@ export default class GoogleMap extends Component{
                     window.alert('Request failed due to ' + status);
                 }
 
-                console.log("warehouses",this.state);
                 // Second Directions Request
                 const request2 = {
                     origin: currentLocation,              // start at current location
