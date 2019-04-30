@@ -542,11 +542,11 @@ const markDelivered = (request, response) =>
     }
     else
     {
-        var qr = "WITH Tmp1(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
+        var qr = "WITH Tmp(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
         var qr0 = qr + " SELECT * FROM orders WHERE orderid IN (SELECT orderid FROM Tmp)";
         qr0 = "WITH history AS (" + qr0 + ") SELECT orderid, status FROM history WHERE status = 'delivering'";
-        var qr1 = qr + " UPDATE itemsinorder SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp1)";
-        var qr2 = qr + " UPDATE orders SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp1)";
+        var qr1 = qr + " UPDATE itemsinorder SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
+        var qr2 = qr + " UPDATE orders SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
 
         getDatabase(qr0,"",(t1)=>{
             if (t1.length != orderids.length)
