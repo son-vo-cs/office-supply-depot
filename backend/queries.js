@@ -438,6 +438,7 @@ const getShipAddress = (request, response) =>
 {
 	getDatabase("SELECT orderid, shipadd, priority, orderdate, warehouseid FROM orders WHERE status= " + "'processing'", "",
 		(result)=>{
+            console.log(result);
 			if (result === undefined)
 			{
 				response.status(404).json(`There are no orders that need to be delivered`);
@@ -503,11 +504,26 @@ const getShipAddress = (request, response) =>
 				{
 					idfinal = 1;
 				}
+                var orderids = [];
 				for (var i = 0; i < day_2.length; i++)
 				{
 					day_2[i].warehouseid = idfinal;
+                    orderids.push(day_2[i].orderid);
 				}
-				response.status(200).json(day_2);
+                if (day_2.length < 1)
+                {
+                    response.status(404).json("There are no orders that need to be delivered");        
+                }
+                else
+                {
+                    var qr5 = "WITH Tmp(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
+                    setDatabase(qr5+"UPDATE orders set status = 'delivering' WHERE orderid IN (SELECT orderid FROM Tmp)",[],(t5)=>
+                    {
+                        response.status(200).json(day_2);       
+                    });    
+                }
+                
+				
 			}
 		});
 }
@@ -516,28 +532,36 @@ const markDelivered = (request, response) =>
 {
 
 	const {orderids} = request.body;
-	var qr = "WITH Tmp(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
-	var qr0 = qr + " SELECT * FROM orders WHERE orderid IN (SELECT orderid FROM Tmp)";
-	qr0 = "WITH history AS (" + qr0 + ") SELECT orderid, status FROM history WHERE status = 'processing'";
-	var qr1 = qr + " UPDATE itemsinorder SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
-	var qr2 = qr + " UPDATE orders SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp)";
+    if (orderids.length < 1)
+    {
+        response.status(404).json("Some of the orderid does not need to be updated");
+    }
+    else
+    {
+        var qr = "WITH Tmp1(orderid) AS (VALUES" + helperAvailable(orderids) + ")";
+        var qr0 = qr + " SELECT * FROM orders WHERE orderid IN (SELECT orderid FROM Tmp)";
+        qr0 = "WITH history AS (" + qr0 + ") SELECT orderid, status FROM history WHERE status = 'delivering'";
+        var qr1 = qr + " UPDATE itemsinorder SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp1)";
+        var qr2 = qr + " UPDATE orders SET status = 'delivered' WHERE orderid IN (SELECT orderid FROM Tmp1)";
 
-	getDatabase(qr0,"",(t1)=>{
-		if (t1.length != orderids.length)
-		{
-			response.status(404).json("Some of the orderid does not need to be updated");
-		}
-		else
-		{
-			setDatabase(qr1,[],(t)=>{
-				setDatabase(qr2,[],(t6)=>{
-					response.status(200).json("Update status sucessfully");
-				});
-			});
+        getDatabase(qr0,"",(t1)=>{
+            if (t1.length != orderids.length)
+            {
+                response.status(404).json("Some of the orderid does not need to be updated");
+            }
+            else
+            {
+                setDatabase(qr1,[],(t)=>{
+                    setDatabase(qr2,[],(t6)=>{
+                        response.status(200).json("Update status sucessfully");
+                    });
+                });
 
-		}
-	});
-
+            }
+        });
+        
+    }
+	
 
 }
 
