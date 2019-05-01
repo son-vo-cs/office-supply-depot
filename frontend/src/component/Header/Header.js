@@ -10,14 +10,16 @@ import userService from "../../common/services/User/UserService";
 import userStoreService from "../../common/services/User/UserStoreService";
 
 
+
 class Header extends Component {
 
 
+
     constructor(props) {
-        super(props)
-      //  console.log(userStoreService.getUser(),"lll")
+        super(props);
 
     }
+
 
     state = {
         userStatus: userStoreService.isLoggedin()? 'User Profile': 'Login',
@@ -41,6 +43,7 @@ class Header extends Component {
     // };
 
     componentDidMount() {
+
         this.setState({
             selectedMeun: document.getElementById('all')
         });
@@ -53,7 +56,10 @@ class Header extends Component {
             alert(error.message);
         });
 
+
+
         // fetch data from backend and assign all to displayCare
+        // cookie.save(userStoreService.isLoggedin(), true, {path: '/'});
     }
 
     handleOpen = () => {
@@ -154,7 +160,7 @@ class Header extends Component {
     render() {
 
         return (
-            <div>
+            <div cookies={this.props.cookies}>
 
                 <img className="rounded mx-auto d-block logo" src={logo}/>
 
@@ -210,7 +216,7 @@ class Header extends Component {
                     {
                         this.state.nameData.map((val, index) => {
                             return (
-                                <Card cardName={val.name} cardUrl={val.url} cardId={val.itemid} key={index}/>
+                                <Card cardName={val.name} cardUrl={val.url} cardId={val.itemid} cardPrice={val.price} key={index}/>
                             )
                         })
                     }

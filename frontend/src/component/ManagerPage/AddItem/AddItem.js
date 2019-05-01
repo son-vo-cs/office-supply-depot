@@ -73,7 +73,7 @@ const AddItem = (props) => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="itemQuantity">Quantity<span className="text-danger">*</span></label>
-                        <input type="number" name="itemQuantity" required
+                        <input type="number" name="itemQuantity" required min='1' step='1'
                                placeholder="Enter Quantity" className="form-control" id="itemQuantity"/>
                     </div>
                     <div className="form-group">

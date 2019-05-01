@@ -61,7 +61,7 @@ class Register extends React.Component {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="emailAddress">Email<span className="text-danger">*</span></label>
-                                <input type="email" name="email" required
+                                <input type="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
                                     placeholder="Email" className="form-control" id="email"/>
                             </div>
                             <div className="form-group">
@@ -74,6 +74,8 @@ class Register extends React.Component {
                                 <input type="password" required name='cPassword'
                                     placeholder="Password" className="form-control" id="cPassword"/>
                             </div>
+
+
 
                             <div className="form-group submitbutton">
                                 <input type='submit' name='Submit' value="Create My Account" className="btn btn-danger"/>

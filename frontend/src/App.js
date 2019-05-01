@@ -9,12 +9,14 @@ import Cart from "./component/Cart/Cart";
 import ManagerPage from "./component/ManagerPage/ManagerPage";
 import DriverPage from "./component/DriverPage/DriverPage";
 import UserProfile from "./component/UserProfile/UserProfile";
+import { CookiesProvider } from 'react-cookie';
 
 class App extends Component {
 
     render() {
         return (
 
+            <CookiesProvider>
             <React.Fragment>
                 <BrowserRouter>
                     <Switch>
@@ -29,6 +31,7 @@ class App extends Component {
                     </Switch>
                 </BrowserRouter>
             </React.Fragment>
+            </CookiesProvider>
 
         );
     }

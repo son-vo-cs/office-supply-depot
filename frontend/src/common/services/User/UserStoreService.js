@@ -107,7 +107,12 @@ class UserStoreService {
     isUnder() {
         return this.price < 100;
     }
-
+    isUnderWeight(){
+        return this.weight < 15;
+    }
+    isOverWeight(){
+        return this.weight >= 15;
+    }
     setAllItem(allItem){
         this.allItem = allItem;
     }
