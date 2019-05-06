@@ -159,8 +159,6 @@ const loginUser = (request, response) => {
 				var salt = result.salt;
 				var passHash = saltHashPassword(password,salt).passwordHash;
 				var actualPass = result.password;
-				console.log(actualPass);
-				console.log(passHash);
 				if (passHash === actualPass)
 				{
 					let token = jwtauth.generate({email: email});
@@ -228,10 +226,16 @@ const addItem = (request, response) =>{
 		{
 			var itemid = t.itemid;
 			var oldQuantity = t.quantity;
-			setDatabase("UPDATE items SET price = $1, quantity = $2 WHERE itemid = $3",[price,oldQuantity + quantity, itemid], (t1)=>{
-				response.status(200).json("Successfully changed price and quantity of the existing item");
-			});
-
+			var newQuantity = oldQuantity + quantity;
+			if (newQuantity < 0)
+			{
+				response.status(404).json("The quantity goes below zero");
+			}
+			else {
+				setDatabase("UPDATE items SET price = $1, quantity = $2 WHERE itemid = $3", [price, oldQuantity + quantity, itemid], (t1) => {
+					response.status(200).json("Successfully changed price and quantity of the existing item");
+				});
+			}
 
 		}
 	});
@@ -589,25 +593,131 @@ const deleteItem = (request, response) =>
 		}
 	});
 
-	// response.status(200).json("hahah");
-	// getDatabase(qr1,"",(t1)=>
-	// {
-	// 	if (t1.length != itemids.length)
-	// 	{
-	// 		response.status(404).json("Some of the item ids are not in the database!");
-	// 	}
-	// 	else
-	// 	{
-	// 		//
-	// 		setDatabase(qr0,[],(t)=>
-	// 		{
-	//
-	// 			response.status(200).json("Successfully deleted the items");
-	//
-	// 		});
-	// 	}
-	// });
+
+
 }
+
+const addShoppingCart = (request, response) =>
+{
+
+	const {userid, itemid} = request.body;
+	getDatabase("SELECT cartid, quantity FROM shoppingcart WHERE userid = $1 AND itemid = $2" ,[userid, itemid],(t)=>
+	{
+		var quantity = 1;
+		if (t === undefined)
+		{
+			setDatabase("INSERT INTO shoppingcart (userid, itemid, quantity) VALUES (?,?,?)", [userid,itemid,quantity], (t)=>{
+				response.status(200).json("Succesfully add item into shopping cart");
+			});
+		}
+		else
+		{
+			var id = (t).cartid;
+			var newQuantity = t.quantity + quantity;
+			setDatabase("UPDATE shoppingcart SET  quantity = $1 WHERE cartid = $2",[newQuantity, id],(t1)=>
+			{
+				response.status(200).json("Sucessfully add item into shopping cart");
+			});
+
+		}
+	});
+}
+
+
+const editShoppingCart = (request, response) =>
+{
+
+	const {userid, itemid, quantity} = request.body;
+	getDatabase("SELECT cartid FROM shoppingcart WHERE userid = $1 AND itemid = $2" ,[userid, itemid],(t)=>
+	{
+		if (quantity <= 0)
+		{
+			response.status(404).json("Invalid quantity");
+		}
+		else if (t === undefined)
+		{
+			setDatabase("INSERT INTO shoppingcart (userid, itemid, quantity) VALUES (?,?,?)", [userid,itemid,quantity], (t)=>{
+				response.status(200).json("Succesfully add item into shopping cart");
+			});
+		}
+		else
+		{
+			var id = (t).cartid;
+			setDatabase("UPDATE shoppingcart SET  quantity = $1 WHERE cartid = $2",[quantity, id],(t1)=>
+			{
+				response.status(200).json("Sucessfully add item into shopping cart");
+			});
+
+		}
+	});
+}
+
+const deleteShoppingCart = (request, response) =>
+{
+
+	const {userid, itemid} = request.body;
+	getDatabase("SELECT cartid FROM shoppingcart WHERE userid = $1 AND itemid = $2" ,[userid, itemid],(t)=>
+	{
+		var id = t.cartid;
+		if (t === undefined)
+		{
+			response.status(404).json("There is no item to delete");
+		}
+		else
+		{
+			setDatabase("DELETE FROM shoppingcart WHERE cartid = $1",[id],(t1)=>
+			{
+				response.status(200).json("Sucessfully delete item from shopping cart");
+			});
+
+		}
+	});
+}
+
+const getShoppingCart = (request, response) =>
+{
+
+	const {userid} = request.body;
+	getDatabase("SELECT itemid, quantity FROM shoppingcart WHERE userid = " + userid ,"",(t)=>
+	{
+		if (t === undefined || t.length < 1)
+		{
+			response.status(404).json("There is no item in the shopping cart");
+		}
+		else
+		{
+			var items = [];
+			for (var i = 0; i < t.length; i++)
+			{
+				items.push(t[i].itemid);
+			}
+			var qr = "WITH Tmp(itemid) AS (VALUES" + helperAvailable(items) + ")";
+			getDatabase(qr + "SELECT itemid, name, weight, warehouseid, price, url FROM items WHERE itemid IN (SELECT itemid FROM Tmp)", "", (t1)=>
+			{
+				for (var i = 0; i < t1.length; i++)
+				{
+					t1[i].quantityInCart = t[i].quantity;
+				}
+				response.status(200).json(t1);
+			});
+
+		}
+	});
+}
+
+
+const deleteWholeShoppingCart = (request, response) =>
+{
+
+	const {userid} = request.body;
+	setDatabase("DELETE FROM shoppingcart WHERE userid = $1" ,[userid],(t)=>
+	{
+		response.status(404).json("Succesfully delete the whole shopping cart");
+	});
+}
+
+
+
 
 
 // const setPrice = (request, response) =>
@@ -673,5 +783,10 @@ module.exports = {
 	getOrderHistoryDetail,
 	getShipAddress,
 	markDelivered,
-	deleteItem
+	deleteItem,
+	addShoppingCart,
+	deleteShoppingCart,
+	getShoppingCart,
+	deleteWholeShoppingCart,
+	editShoppingCart
 }

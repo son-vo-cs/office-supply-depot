@@ -48,8 +48,13 @@
     padding: 10px;
 }
 
+.itemPic {
+    margin-left: 30px;
+}
+
 .itemName {
-    width: 50%;
+    vertical-align: middle;
+    margin-top: 35px;
 }
 
 .itemColLarge {
@@ -60,7 +65,14 @@
     width: 5%;
 }
 
+.itemColRemove {
+    width: 12%;
+}
+
 .cell{
     margin: 0 auto;
     text-align: center;
+}
+.cartBtn{
+    margin-right: 0;
 }

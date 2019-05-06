@@ -89,10 +89,23 @@ class Checkout extends Component {
             this.props.history.push('/')
             UserStoreService.setShoppingCart(this.state.renew);
             UserStoreService.setTotalPrice(null);
+
+
+            let body ={
+                authorization: UserStoreService.getToken(),
+                userid: UserStoreService.getUserId(),
+            }
+            userService.deleteWholeShoppingCart(JSON.stringify(body)).then((data) => {
+
+            }).catch((error) => {
+              //  alert(error.message);
+            });
         }).catch((error) => {
             alert(error.message);
         });
         console.log(this.state.firstName,"fname")
+
+
 
 
     };
