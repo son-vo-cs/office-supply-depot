@@ -62,7 +62,7 @@ const AddItem = (props) => {
 
 
             <div>
-                <h1>Add Item</h1>
+                <h1>Edit Item</h1>
                 <form onSubmit={(event) => handleSubmit(event)}>
                     <div className="form-group">
                         <label htmlFor="wareNum">Warehouse #<span className="text-danger">*</span></label>
@@ -72,8 +72,8 @@ const AddItem = (props) => {
                         </select>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="itemQuantity">Quantity<span className="text-danger">*</span></label>
-                        <input type="number" name="itemQuantity" required min='1' step='1'
+                        <label htmlFor="itemQuantity">Change Quantity<span className="text-danger">*</span></label>
+                        <input type="number" name="itemQuantity" step='1'
                                placeholder="Enter Quantity" className="form-control" id="itemQuantity"/>
                     </div>
                     <div className="form-group">

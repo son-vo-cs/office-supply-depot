@@ -115,7 +115,7 @@ class ManagerPage extends Component {
                     <Navbar bg="white" variant="light">
                         <Nav className="float-right">
                             <Nav.Link >Hi, Manager</Nav.Link>
-                            <Nav.Link onClick={this.handleOpen('body')}>Add Item</Nav.Link>
+                            <Nav.Link onClick={this.handleOpen('body')}>Edit Item</Nav.Link>
                             <Nav.Link onClick={() => {this.props.history.push('/')}}>Main Page</Nav.Link>
                         </Nav>
                     </Navbar>
