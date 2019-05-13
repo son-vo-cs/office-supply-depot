@@ -218,7 +218,6 @@ class Cart extends Component {
             });
             console.log(this.state.itemList,"itemList")
 
-            alert("Delete Item Successfully")
             // console.log(this.props,"my props")
             //
             // // this.props.history.push('/')
@@ -271,7 +270,7 @@ class Cart extends Component {
                 userService.checkAvailable(JSON.stringify(body)).then((data) => {
                     console.log(data);
 
-                    alert(data);
+                    // alert(data);
                     props.history.push('/checkout')
                 }).catch((error) => {
                     alert(error.message);
@@ -370,7 +369,7 @@ class Cart extends Component {
                 });
                 console.log(this.state.itemList,"itemList")
 
-                alert("Delete Item Successfully")
+                // alert("Delete Item Successfully")
                 // console.log(this.props,"my props")
                 //
                 // // this.props.history.push('/')

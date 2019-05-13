@@ -32,7 +32,6 @@ class Checkout extends Component {
 
     componentDidMount(){
         let today = new Date().toLocaleDateString();
-
         console.log(today,"today")
     }
 
@@ -63,48 +62,54 @@ class Checkout extends Component {
         //     console.log(UserStoreService.getTotalPrice(), "new total price")
         // }
 
-        let body = {
-            authorization: UserStoreService.getToken(),
-            userid: UserStoreService.getUserId(),
-            firstname: this.state.firstName,
-            lastname: this.state.lastName,
-            address: this.state.address,
-            city: this.state.city,
-            state: this.state.state,
-            zip: this.state.zip,
-            phone: this.state.phone,
-            totalprice: UserStoreService.getTotalPrice(),
-            itemids: UserStoreService.getItemId(),
-            quantities: UserStoreService.getQuantities(),
-            priority: this.state.priority,
-            warehousenums: UserStoreService.getWareHouseId(),
-            timestamp: new Date().toLocaleDateString(),
-        };
-
-        console.log(body,"orderSubmit body")
-        userService.submitOrder(JSON.stringify(body)).then((data) => {
-            console.log(data);
-
-            alert('Order Submitted');
-            this.props.history.push('/')
-            UserStoreService.setShoppingCart(this.state.renew);
-            UserStoreService.setTotalPrice(null);
-
-
-            let body ={
+        if(document.getElementById("year").value == new Date().getFullYear() &&
+            parseInt(document.getElementById("month").value) <= new Date().getMonth()+1)
+        {
+            alert("Sorry, the credit card is expired")
+        }
+        else {
+            let body = {
                 authorization: UserStoreService.getToken(),
                 userid: UserStoreService.getUserId(),
-            }
-            userService.deleteWholeShoppingCart(JSON.stringify(body)).then((data) => {
+                firstname: this.state.firstName,
+                lastname: this.state.lastName,
+                address: this.state.address,
+                city: this.state.city,
+                state: this.state.state,
+                zip: this.state.zip,
+                phone: this.state.phone,
+                totalprice: UserStoreService.getTotalPrice(),
+                itemids: UserStoreService.getItemId(),
+                quantities: UserStoreService.getQuantities(),
+                priority: this.state.priority,
+                warehousenums: UserStoreService.getWareHouseId(),
+                timestamp: new Date().toLocaleDateString(),
+            };
 
+            console.log(body,"orderSubmit body")
+            userService.submitOrder(JSON.stringify(body)).then((data) => {
+                console.log(data);
+
+                alert('Order Submitted');
+                this.props.history.push('/')
+                UserStoreService.setShoppingCart(this.state.renew);
+                UserStoreService.setTotalPrice(null);
+
+
+                let body ={
+                    authorization: UserStoreService.getToken(),
+                    userid: UserStoreService.getUserId(),
+                }
+                userService.deleteWholeShoppingCart(JSON.stringify(body)).then((data) => {
+
+                }).catch((error) => {
+                //  alert(error.message);
+                });
             }).catch((error) => {
-              //  alert(error.message);
+                alert(error.message);
             });
-        }).catch((error) => {
-            alert(error.message);
-        });
-        console.log(this.state.firstName,"fname")
-
+            console.log(this.state.firstName,"fname")
+        }
 
 
 
@@ -444,8 +449,8 @@ class Checkout extends Component {
 
 
                         <div className="form-group">
-                            <label htmlFor="cardnumber">Card Number (Twelve Digits)<span className="text-danger">*</span></label>
-                            <input  type="text" pattern="\d{12}" required
+                            <label htmlFor="cardnumber">Card Number (Sixteen Digits)<span className="text-danger">*</span></label>
+                            <input  type="text" pattern="\d{16}" required
                                     placeholder="Card Number" className="form-control"/>
                         </div>
 
@@ -453,7 +458,7 @@ class Checkout extends Component {
                             <div className="col-md-6">
                                 <label htmlFor="exp">Expiration Month<span className="text-danger">*</span></label>
                                 <Form>
-                                    <Form.Control as="select">
+                                    <Form.Control as="select" id="month">
                                         <option>01</option>
                                         <option>02</option>
                                         <option>03</option>
@@ -472,7 +477,7 @@ class Checkout extends Component {
                             <div className="col-md-6">
                                 <label htmlFor="exp">Year<span className="text-danger">*</span></label>
                                 <Form>
-                                    <Form.Control as="select">
+                                    <Form.Control as="select" id="year"> 
                                         <option>2019</option>
                                         <option>2020</option>
                                         <option>2021</option>
